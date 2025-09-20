@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useAuth } from '@/components/AuthProvider';
 import { BookOpen, Play, Clock, CheckCircle, ArrowLeft } from 'lucide-react';
 
 interface Lesson {
@@ -36,12 +37,19 @@ export default function SimpleCourseDetailPage({ params }: { params: { id: strin
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const router = useRouter();
+  const { user, loading: authLoading } = useAuth();
 
   useEffect(() => {
-    if (params.id) {
+    if (!authLoading && !user) {
+      router.push('/auth/login');
+    }
+  }, [user, authLoading, router]);
+
+  useEffect(() => {
+    if (params.id && user) {
       fetchCourseData();
     }
-  }, [params.id]);
+  }, [params.id, user]);
 
   const fetchCourseData = async () => {
     try {
@@ -91,6 +99,21 @@ export default function SimpleCourseDetailPage({ params }: { params: { id: strin
       setLoading(false);
     }
   };
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Đang xác thực...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null; // Will redirect to login
+  }
 
   if (loading) {
     return (

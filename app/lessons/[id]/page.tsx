@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { useAuth } from '@/components/AuthProvider';
 import VideoPlayer from '@/components/VideoPlayer';
 import AudioPlayerWrapper from '@/components/AudioPlayerWrapper';
 import ListeningLessonViewer from '@/components/ListeningLessonViewer';
@@ -17,6 +18,7 @@ export default function LessonPage() {
   const params = useParams();
   const router = useRouter();
   const supabase = createClientComponentClient();
+  const { user, loading: authLoading } = useAuth();
   
   const [lesson, setLesson] = useState<Lesson | null>(null);
   const [course, setCourse] = useState<Course | null>(null);
@@ -36,8 +38,16 @@ export default function LessonPage() {
   const lessonId = params.id as string;
 
   useEffect(() => {
-    fetchLessonData();
-  }, [lessonId]);
+    if (!authLoading && !user) {
+      router.push('/auth/login');
+    }
+  }, [user, authLoading, router]);
+
+  useEffect(() => {
+    if (lessonId && user) {
+      fetchLessonData();
+    }
+  }, [lessonId, user]);
 
   const fetchLessonData = async () => {
     try {
@@ -149,6 +159,21 @@ export default function LessonPage() {
       setCurrentVideoIndex(currentVideoIndex - 1);
     }
   };
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Đang xác thực...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null; // Will redirect to login
+  }
 
   if (loading) {
     return (
