@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { createClient } from '@supabase/supabase-js';
+import { useAuth } from '@/components/AuthProvider';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { BookOpen, Play, Clock, ArrowLeft } from 'lucide-react';
 
@@ -14,13 +16,24 @@ interface Course {
 }
 
 export default function SimpleCoursesPage() {
+  const { user, loading: authLoading } = useAuth();
+  const router = useRouter();
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
+  // Redirect to login if not authenticated
   useEffect(() => {
-    fetchCourses();
-  }, []);
+    if (!authLoading && !user) {
+      router.push('/auth/login');
+    }
+  }, [user, authLoading, router]);
+
+  useEffect(() => {
+    if (user) {
+      fetchCourses();
+    }
+  }, [user]);
 
   const fetchCourses = async () => {
     try {
@@ -66,6 +79,22 @@ export default function SimpleCoursesPage() {
       setLoading(false);
     }
   };
+
+  // Loading state for authentication
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Đang xác thực...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null; // Will redirect to login
+  }
 
   if (loading) {
     return (
