@@ -194,7 +194,13 @@ export default function LessonPage() {
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Không tìm thấy bài học</h2>
           <p className="text-gray-600 mb-4">{error || 'Bài học không tồn tại'}</p>
           <button
-            onClick={() => router.back()}
+            onClick={() => {
+              if (window.history.length > 1) {
+                router.back();
+              } else {
+                router.push('/simple-courses');
+              }
+            }}
             className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
           >
             Quay lại
@@ -218,15 +224,21 @@ export default function LessonPage() {
                 {lesson.title}
               </p>
             </div>
-            <Link
-              href="/simple-courses"
+            <button
+              onClick={() => {
+                if (window.history.length > 1) {
+                  router.back();
+                } else {
+                  router.push('/simple-courses');
+                }
+              }}
               className="text-gray-500 hover:text-gray-700 flex items-center"
             >
               <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
               </svg>
               Quay lại khóa học
-            </Link>
+            </button>
           </div>
         </div>
       </div>

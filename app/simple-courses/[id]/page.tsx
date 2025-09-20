@@ -134,7 +134,13 @@ export default function SimpleCourseDetailPage({ params }: { params: { id: strin
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Không tìm thấy khóa học</h2>
           <p className="text-gray-600 mb-4">{error || 'Khóa học không tồn tại'}</p>
           <button
-            onClick={() => router.back()}
+            onClick={() => {
+              if (window.history.length > 1) {
+                router.back();
+              } else {
+                router.push('/simple-courses');
+              }
+            }}
             className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
           >
             Quay lại
@@ -154,9 +160,18 @@ export default function SimpleCourseDetailPage({ params }: { params: { id: strin
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
             <div className="flex items-center">
-              <Link href="/simple-courses" className="mr-4">
+              <button
+                onClick={() => {
+                  if (window.history.length > 1) {
+                    router.back();
+                  } else {
+                    router.push('/simple-courses');
+                  }
+                }}
+                className="mr-4"
+              >
                 <ArrowLeft className="h-6 w-6 text-gray-600 hover:text-gray-900" />
-              </Link>
+              </button>
               <BookOpen className="h-8 w-8 text-blue-600" />
               <span className="ml-2 text-2xl font-bold text-gray-900">IELTS LMS</span>
             </div>
