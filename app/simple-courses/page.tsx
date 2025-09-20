@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { createClient } from '@supabase/supabase-js';
+import { getSupabaseClient } from '@/lib/supabase';
 import Link from 'next/link';
 import { BookOpen, Play, Clock, ArrowLeft } from 'lucide-react';
 
@@ -26,11 +26,8 @@ export default function SimpleCoursesPage() {
     try {
       setLoading(true);
       
-      // Create Supabase client directly
-      const supabase = createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-      );
+      // Use singleton Supabase client
+      const supabase = getSupabaseClient();
       
       // Fetch courses
       const { data: coursesData, error: coursesError } = await supabase
@@ -44,7 +41,7 @@ export default function SimpleCoursesPage() {
       } else {
         // Get lesson count for each course
         const coursesWithCounts = await Promise.all(
-          (coursesData || []).map(async (course) => {
+          (coursesData || []).map(async (course: any) => {
             const { count } = await supabase
               .from('lessons')
               .select('*', { count: 'exact', head: true })
