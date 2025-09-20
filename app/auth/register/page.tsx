@@ -65,9 +65,13 @@ export default function RegisterPage() {
             <div className="flex justify-between items-center py-4">
               <button
                 onClick={() => {
-                  if (window.history.length > 1) {
-                    router.back();
-                  } else {
+                  try {
+                    if (window.history.length > 1) {
+                      window.history.back();
+                    } else {
+                      router.push('/');
+                    }
+                  } catch (error) {
                     router.push('/');
                   }
                 }}
@@ -112,19 +116,23 @@ export default function RegisterPage() {
       <div className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
-            <button
-              onClick={() => {
-                if (window.history.length > 1) {
-                  router.back();
-                } else {
-                  router.push('/');
-                }
-              }}
-              className="flex items-center text-gray-600 hover:text-gray-900"
-            >
-              <ArrowLeft className="h-6 w-6 mr-2" />
-              Quay lại
-            </button>
+              <button
+                onClick={() => {
+                  try {
+                    if (window.history.length > 1) {
+                      window.history.back();
+                    } else {
+                      router.push('/');
+                    }
+                  } catch (error) {
+                    router.push('/');
+                  }
+                }}
+                className="flex items-center text-gray-600 hover:text-gray-900"
+              >
+                <ArrowLeft className="h-6 w-6 mr-2" />
+                Quay lại
+              </button>
             <div className="flex items-center">
               <BookOpen className="h-8 w-8 text-primary-600" />
               <span className="ml-2 text-xl font-bold text-gray-900">IELTS LMS</span>

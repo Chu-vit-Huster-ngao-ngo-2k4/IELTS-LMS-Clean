@@ -135,9 +135,13 @@ export default function SimpleCourseDetailPage({ params }: { params: { id: strin
           <p className="text-gray-600 mb-4">{error || 'Khóa học không tồn tại'}</p>
           <button
             onClick={() => {
-              if (window.history.length > 1) {
-                router.back();
-              } else {
+              try {
+                if (window.history.length > 1) {
+                  window.history.back();
+                } else {
+                  router.push('/simple-courses');
+                }
+              } catch (error) {
                 router.push('/simple-courses');
               }
             }}
@@ -162,9 +166,13 @@ export default function SimpleCourseDetailPage({ params }: { params: { id: strin
             <div className="flex items-center">
               <button
                 onClick={() => {
-                  if (window.history.length > 1) {
-                    router.back();
-                  } else {
+                  try {
+                    if (window.history.length > 1) {
+                      window.history.back();
+                    } else {
+                      router.push('/simple-courses');
+                    }
+                  } catch (error) {
                     router.push('/simple-courses');
                   }
                 }}

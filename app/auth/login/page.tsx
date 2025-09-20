@@ -46,9 +46,13 @@ export default function LoginPage() {
           <div className="flex justify-between items-center py-4">
             <button
               onClick={() => {
-                if (window.history.length > 1) {
-                  router.back();
-                } else {
+                try {
+                  if (window.history.length > 1) {
+                    window.history.back();
+                  } else {
+                    router.push('/');
+                  }
+                } catch (error) {
                   router.push('/');
                 }
               }}
