@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { BookOpen, Play, Users, Award, ArrowRight } from 'lucide-react';
+import { BookOpen, Play, Users, Award, ArrowRight, Mail, Phone, MessageCircle } from 'lucide-react';
 
 export default function HomePage() {
   return (
@@ -146,6 +146,99 @@ export default function HomePage() {
               >
                 Xem chi tiết <ArrowRight className="h-4 w-4 ml-1" />
               </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Contact Admin Section */}
+      <div className="bg-white py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+              Cần thêm khóa học?
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Bạn muốn thêm khóa học mới hoặc có yêu cầu đặc biệt? 
+              Liên hệ với admin để được hỗ trợ!
+            </p>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-8">
+            {/* Email Contact */}
+            <div className="text-center p-6 bg-blue-50 rounded-lg">
+              <div className="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Mail className="h-8 w-8 text-blue-600" />
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">Email</h3>
+              <p className="text-gray-600 mb-4">Gửi yêu cầu qua email</p>
+              <a 
+                href="mailto:admin@ielts-lms.com?subject=Yêu cầu thêm khóa học&body=Xin chào admin,%0D%0A%0D%0ATôi muốn thêm khóa học mới với thông tin sau:%0D%0A- Tên khóa học:%0D%0A- Mô tả:%0D%0A- Nội dung:%0D%0A%0D%0ACảm ơn bạn!"
+                className="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium"
+              >
+                admin@ielts-lms.com
+              </a>
+            </div>
+
+            {/* Phone Contact */}
+            <div className="text-center p-6 bg-green-50 rounded-lg">
+              <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Phone className="h-8 w-8 text-green-600" />
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">Điện thoại</h3>
+              <p className="text-gray-600 mb-4">Gọi trực tiếp để được tư vấn</p>
+              <a 
+                href="tel:+84123456789"
+                className="inline-flex items-center text-green-600 hover:text-green-700 font-medium"
+              >
+                +84 123 456 789
+              </a>
+            </div>
+
+            {/* Message Contact */}
+            <div className="text-center p-6 bg-purple-50 rounded-lg">
+              <div className="bg-purple-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                <MessageCircle className="h-8 w-8 text-purple-600" />
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">Tin nhắn</h3>
+              <p className="text-gray-600 mb-4">Gửi tin nhắn nhanh</p>
+              <a 
+                href="https://wa.me/84123456789?text=Xin chào admin, tôi muốn thêm khóa học mới vào hệ thống IELTS LMS"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center text-purple-600 hover:text-purple-700 font-medium"
+              >
+                WhatsApp
+              </a>
+            </div>
+          </div>
+
+          {/* Additional Info */}
+          <div className="mt-12 text-center">
+            <div className="bg-gray-50 rounded-lg p-6 max-w-4xl mx-auto">
+              <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                Thông tin cần cung cấp khi liên hệ:
+              </h3>
+              <div className="grid md:grid-cols-2 gap-4 text-left">
+                <div>
+                  <h4 className="font-medium text-gray-900 mb-2">Thông tin khóa học:</h4>
+                  <ul className="text-sm text-gray-600 space-y-1">
+                    <li>• Tên khóa học</li>
+                    <li>• Mô tả chi tiết</li>
+                    <li>• Mức độ (Beginner/Intermediate/Advanced)</li>
+                    <li>• Thời lượng dự kiến</li>
+                  </ul>
+                </div>
+                <div>
+                  <h4 className="font-medium text-gray-900 mb-2">Nội dung khóa học:</h4>
+                  <ul className="text-sm text-gray-600 space-y-1">
+                    <li>• Danh sách bài học</li>
+                    <li>• Tài liệu (PDF, Video, Audio)</li>
+                    <li>• Bài tập và đáp án</li>
+                    <li>• Yêu cầu đặc biệt</li>
+                  </ul>
+                </div>
+              </div>
             </div>
           </div>
         </div>
