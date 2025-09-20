@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { BookOpen, Eye, EyeOff } from 'lucide-react'
+import { BookOpen, Eye, EyeOff, ArrowLeft } from 'lucide-react'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -39,15 +39,43 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 to-blue-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div className="text-center">
-          <div className="flex justify-center">
-            <BookOpen className="h-12 w-12 text-primary-600" />
+    <div className="min-h-screen bg-gradient-to-br from-primary-50 to-blue-100">
+      {/* Header with return button */}
+      <div className="bg-white shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center py-4">
+            <button
+              onClick={() => {
+                if (window.history.length > 1) {
+                  router.back();
+                } else {
+                  router.push('/');
+                }
+              }}
+              className="flex items-center text-gray-600 hover:text-gray-900"
+            >
+              <ArrowLeft className="h-6 w-6 mr-2" />
+              Quay lại
+            </button>
+            <div className="flex items-center">
+              <BookOpen className="h-8 w-8 text-primary-600" />
+              <span className="ml-2 text-xl font-bold text-gray-900">IELTS LMS</span>
+            </div>
+            <div className="w-20"></div> {/* Spacer for centering */}
           </div>
-          <h2 className="mt-6 text-3xl font-bold text-gray-900">
-            Đăng nhập tài khoản
-          </h2>
+        </div>
+      </div>
+
+      {/* Login form */}
+      <div className="flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-md w-full space-y-8">
+          <div className="text-center">
+            <div className="flex justify-center">
+              <BookOpen className="h-12 w-12 text-primary-600" />
+            </div>
+            <h2 className="mt-6 text-3xl font-bold text-gray-900">
+              Đăng nhập tài khoản
+            </h2>
           <p className="mt-2 text-sm text-gray-600">
             Hoặc{' '}
             <Link href="/auth/register" className="font-medium text-primary-600 hover:text-primary-500">
