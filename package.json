@@ -24,6 +24,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "postinstall": "npm run build",
     "db:generate-types": "supabase gen types typescript --local > lib/database.types.ts",
     "worker:dev": "wrangler dev",
     "worker:deploy": "wrangler deploy",
