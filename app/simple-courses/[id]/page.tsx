@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { getSupabaseClient } from '@/lib/supabase';
+import { createClient } from '@supabase/supabase-js';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/components/AuthProvider';
@@ -55,8 +55,11 @@ export default function SimpleCourseDetailPage({ params }: { params: { id: strin
     try {
       setLoading(true);
       
-      // Use singleton Supabase client
-      const supabase = getSupabaseClient();
+      // Create Supabase client directly
+      const supabase = createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+      );
       
       // Fetch course info
       const { data: courseData, error: courseError } = await supabase

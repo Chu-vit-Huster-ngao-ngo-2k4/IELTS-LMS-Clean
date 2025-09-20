@@ -1,18 +1,8 @@
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { createClient } from '@supabase/supabase-js'
 
-// Singleton pattern for client-side Supabase client
-let supabaseClient: ReturnType<typeof createClientComponentClient> | null = null
-
-export const getSupabaseClient = () => {
-  if (!supabaseClient) {
-    supabaseClient = createClientComponentClient()
-  }
-  return supabaseClient
-}
-
-// For backward compatibility
-export const supabase = getSupabaseClient()
+// Client-side Supabase client
+export const supabase = createClientComponentClient()
 
 // Server-side Supabase client with service role
 export const supabaseAdmin = createClient(

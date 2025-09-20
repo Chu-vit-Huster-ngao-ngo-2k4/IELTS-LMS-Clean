@@ -16,21 +16,11 @@ const AuthContext = createContext<AuthContextType>({
   loading: true,
 })
 
-// Singleton pattern for Supabase client
-let supabaseClient: ReturnType<typeof createClientComponentClient> | null = null
-
-const getSupabaseClient = () => {
-  if (!supabaseClient) {
-    supabaseClient = createClientComponentClient()
-  }
-  return supabaseClient
-}
-
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
-  const supabase = getSupabaseClient()
+  const supabase = createClientComponentClient()
 
   useEffect(() => {
     const getSession = async () => {

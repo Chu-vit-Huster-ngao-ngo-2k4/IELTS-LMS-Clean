@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { getSupabaseClient } from '@/lib/supabase';
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import Link from 'next/link';
 import { BookOpen, Play, Clock, ArrowLeft } from 'lucide-react';
 
@@ -17,7 +17,7 @@ export default function CoursesPublicPage() {
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const supabase = getSupabaseClient();
+  const supabase = createClientComponentClient();
 
   useEffect(() => {
     fetchCourses();
@@ -40,7 +40,7 @@ export default function CoursesPublicPage() {
         console.error('Error fetching courses:', coursesError);
         setError(`Error: ${coursesError.message}`);
       } else {
-        const coursesWithStats = coursesData?.map((course: any) => ({
+        const coursesWithStats = coursesData?.map(course => ({
           ...course,
           lessons_count: course.lessons?.[0]?.count || 0
         })) || [];
