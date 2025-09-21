@@ -25,33 +25,27 @@ export function useUserRole() {
       }
 
       try {
-        // Check if user has admin role
-        const { data: adminData, error: adminError } = await supabase
-          .rpc('user_has_role', {
-            user_id: user.id,
-            role_name: 'admin'
-          });
+        // Get user profile with role
+        const { data: profile, error: profileError } = await supabase
+          .from('user_profiles')
+          .select('role')
+          .eq('user_id', user.id)
+          .single();
 
-        if (adminError) {
-          console.error('Error checking admin role:', adminError);
+        if (profileError) {
+          console.error('Error fetching user profile:', profileError);
+          // Default to regular user if no profile found
+          setIsAdmin(false);
+          setIsInstructor(false);
         } else {
-          setIsAdmin(adminData || false);
-        }
-
-        // Check if user has instructor role
-        const { data: instructorData, error: instructorError } = await supabase
-          .rpc('user_has_role', {
-            user_id: user.id,
-            role_name: 'instructor'
-          });
-
-        if (instructorError) {
-          console.error('Error checking instructor role:', instructorError);
-        } else {
-          setIsInstructor(instructorData || false);
+          const role = profile?.role || 'user';
+          setIsAdmin(role === 'admin');
+          setIsInstructor(role === 'instructor' || role === 'admin');
         }
       } catch (error) {
         console.error('Error checking user roles:', error);
+        setIsAdmin(false);
+        setIsInstructor(false);
       } finally {
         setLoading(false);
       }
