@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useAuth } from '@/components/AuthProvider'
+import { useUserRole } from '@/hooks/useUserRole'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { useRouter } from 'next/navigation'
 import { User, LogOut, Eye, EyeOff, ArrowLeft } from 'lucide-react'
@@ -22,6 +23,7 @@ export default function Header({
   showAuth = true 
 }: HeaderProps) {
   const { user, loading } = useAuth()
+  const { isAdmin, loading: roleLoading } = useUserRole()
   const [showAuthModal, setShowAuthModal] = useState(false)
   const [isLogin, setIsLogin] = useState(true)
   const [email, setEmail] = useState('')
@@ -128,12 +130,14 @@ export default function Header({
                       >
                         Dashboard
                       </Link>
-                      <Link
-                        href="/admin"
-                        className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors text-sm font-medium"
-                      >
-                        Admin
-                      </Link>
+                      {isAdmin && (
+                        <Link
+                          href="/admin"
+                          className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors text-sm font-medium"
+                        >
+                          Admin
+                        </Link>
+                      )}
                       <button
                         onClick={handleLogout}
                         className="flex items-center space-x-1 text-gray-500 hover:text-red-600 transition-colors text-sm"

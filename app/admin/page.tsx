@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import { useAuth } from '@/components/AuthProvider';
+import { useUserRole } from '@/hooks/useUserRole';
 import { useRouter } from 'next/navigation';
 import Header from '@/components/Header';
 import CourseEditor from '@/components/CourseEditor';
@@ -30,6 +31,7 @@ const supabase = createClient(
 
 export default function AdminDashboard() {
   const { user } = useAuth();
+  const { isAdmin, loading: roleLoading } = useUserRole();
   const router = useRouter();
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
@@ -48,8 +50,16 @@ export default function AdminDashboard() {
       router.push('/auth/login');
       return;
     }
-    fetchCourses();
-  }, [user, router]);
+    
+    if (!roleLoading && !isAdmin) {
+      router.push('/dashboard');
+      return;
+    }
+    
+    if (!roleLoading && isAdmin) {
+      fetchCourses();
+    }
+  }, [user, router, isAdmin, roleLoading]);
 
   const fetchCourses = async () => {
     try {
@@ -177,12 +187,32 @@ export default function AdminDashboard() {
     setShowAssetEditor(true);
   };
 
-  if (loading) {
+  if (loading || roleLoading) {
     return (
       <div className="min-h-screen bg-gray-50">
         <Header title="Admin Dashboard" showAuth={true} />
         <div className="flex items-center justify-center h-96">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAdmin) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Header title="Access Denied" showAuth={true} />
+        <div className="flex items-center justify-center h-96">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-gray-900 mb-4">Access Denied</h1>
+            <p className="text-gray-600 mb-4">You don't have permission to access this page.</p>
+            <button
+              onClick={() => router.push('/dashboard')}
+              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              Go to Dashboard
+            </button>
+          </div>
         </div>
       </div>
     );
