@@ -324,6 +324,7 @@ export default function LessonPage() {
               <p className="text-sm text-yellow-700">Answers count: {answers.length}</p>
               <p className="text-sm text-yellow-700">Audios count: {audios.length}</p>
               <p className="text-sm text-yellow-700">Show exercises: {exercises.length > 0 && (course?.id === 1 || course?.id === 3) ? 'YES' : 'NO'}</p>
+              <p className="text-sm text-yellow-700">Show listening: {audios.length > 0 && course?.id === 4 ? 'YES' : 'NO'}</p>
             </div>
 
       {/* Exercise Quiz - Always show for vocabulary and pronunciation lessons if exercises available */}
@@ -341,6 +342,7 @@ export default function LessonPage() {
               <ListeningLessonViewer
                 audios={audios}
                 exercises={exercises}
+                answers={answers}
                 onComplete={handleExerciseComplete}
               />
             )}

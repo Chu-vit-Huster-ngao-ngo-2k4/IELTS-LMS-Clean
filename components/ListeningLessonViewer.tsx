@@ -1,34 +1,36 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, CheckCircle, Eye, EyeOff } from 'lucide-react';
+import { ChevronLeft, ChevronRight, CheckCircle, Download, FileText } from 'lucide-react';
 import AudioPlayerWrapper from './AudioPlayerWrapper';
 import { Asset } from '@/lib/types';
 
 interface ListeningLessonViewerProps {
   audios: Asset[];
   exercises: Asset[];
+  answers: Asset[];
   onComplete?: () => void;
 }
 
 export default function ListeningLessonViewer({ 
   audios, 
   exercises, 
+  answers,
   onComplete 
 }: ListeningLessonViewerProps) {
   const [currentPage, setCurrentPage] = useState(0);
-  const [showAnswers, setShowAnswers] = useState(false);
   const [signedUrls, setSignedUrls] = useState<{ [key: string]: string }>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [downloading, setDownloading] = useState<{ [key: string]: boolean }>({});
 
   // Separate handouts and answers
   const handouts = exercises.filter(ex => ex.title.includes('handout'));
-  const answers = exercises.filter(ex => ex.title.includes('answer'));
+  // answers are now passed as props, no need to filter from exercises
 
   useEffect(() => {
     getSignedUrls();
-  }, [exercises]);
+  }, [exercises, answers]);
 
   const getSignedUrls = async () => {
     try {
@@ -81,8 +83,42 @@ export default function ListeningLessonViewer({
     }
   };
 
-  const toggleAnswers = () => {
-    setShowAnswers(!showAnswers);
+  const downloadAnswer = async (answer: Asset) => {
+    try {
+      setDownloading(prev => ({ ...prev, [answer.id]: true }));
+      
+      // Get signed URL for download
+      const response = await fetch('/api/r2-sign', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          key: answer.providerkey,
+          filename: answer.title
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to get download URL for ${answer.title}`);
+      }
+
+      const data = await response.json();
+      
+      // Create download link
+      const link = document.createElement('a');
+      link.href = data.signedUrl;
+      link.download = `${answer.title}.docx`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+    } catch (err) {
+      console.error('Error downloading answer:', err);
+      alert('Không thể tải file đáp án. Vui lòng thử lại.');
+    } finally {
+      setDownloading(prev => ({ ...prev, [answer.id]: false }));
+    }
   };
 
   if (loading) {
@@ -149,27 +185,21 @@ export default function ListeningLessonViewer({
           </h2>
           
           <div className="flex items-center space-x-4">
-            {/* Show/Hide Answers Button */}
-            <button
-              onClick={toggleAnswers}
-              className={`flex items-center px-4 py-2 rounded-lg font-medium transition-colors ${
-                showAnswers
-                  ? 'bg-green-100 text-green-800 border border-green-300'
-                  : 'bg-gray-100 text-gray-700 border border-gray-300'
-              }`}
-            >
-              {showAnswers ? (
-                <>
-                  <EyeOff className="w-4 h-4 mr-2" />
-                  Ẩn đáp án
-                </>
-              ) : (
-                <>
-                  <Eye className="w-4 h-4 mr-2" />
-                  Hiện đáp án
-                </>
-              )}
-            </button>
+            {/* Download Answers Button */}
+            {answers.length > 0 && (
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={() => {
+                    // Download all answers
+                    answers.forEach(answer => downloadAnswer(answer));
+                  }}
+                  className="flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                >
+                  <Download className="w-4 h-4 mr-2" />
+                  Tải tất cả đáp án
+                </button>
+              </div>
+            )}
 
             {/* Navigation */}
             <div className="flex items-center space-x-2">
@@ -202,9 +232,30 @@ export default function ListeningLessonViewer({
             // Show handout page
             <div>
               <div className="bg-blue-50 px-4 py-2 border-b border-gray-200">
-                <h3 className="font-medium text-blue-900">
-                  📝 Bài tập - Part {currentPage + 1}
-                </h3>
+                <div className="flex items-center justify-between">
+                  <h3 className="font-medium text-blue-900">
+                    📝 Bài tập - Part {currentPage + 1}
+                  </h3>
+                  {answers[currentPage] && (
+                    <button
+                      onClick={() => downloadAnswer(answers[currentPage])}
+                      disabled={downloading[answers[currentPage].id]}
+                      className="flex items-center px-3 py-1 bg-green-600 text-white text-sm rounded hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                      {downloading[answers[currentPage].id] ? (
+                        <>
+                          <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-white mr-1"></div>
+                          Đang tải...
+                        </>
+                      ) : (
+                        <>
+                          <Download className="w-3 h-3 mr-1" />
+                          Tải đáp án
+                        </>
+                      )}
+                    </button>
+                  )}
+                </div>
               </div>
               {handoutUrl ? (
                 <iframe
@@ -226,46 +277,65 @@ export default function ListeningLessonViewer({
                   ✅ Đáp án - Tất cả các phần
                 </h3>
               </div>
-              {showAnswers ? (
-                <div className="space-y-4 p-4">
-                  {answers.map((answer, index) => {
-                    const answerUrl = signedUrls[answer.id];
-                    return (
-                      <div key={answer.id} className="border border-gray-200 rounded-lg">
-                        <div className="bg-gray-50 px-4 py-2 border-b border-gray-200">
-                          <h4 className="font-medium text-gray-900">
+              <div className="p-6">
+                <div className="text-center mb-6">
+                  <FileText className="w-16 h-16 text-green-500 mx-auto mb-4" />
+                  <h4 className="text-lg font-semibold text-gray-900 mb-2">
+                    Tải file đáp án về máy
+                  </h4>
+                  <p className="text-gray-600 mb-6">
+                    Nhấn vào nút bên dưới để tải tất cả file đáp án về máy tính của bạn
+                  </p>
+                </div>
+                
+                <div className="space-y-4">
+                  {answers.map((answer, index) => (
+                    <div key={answer.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border">
+                      <div className="flex items-center">
+                        <FileText className="w-8 h-8 text-green-600 mr-3" />
+                        <div>
+                          <h5 className="font-medium text-gray-900">
                             Đáp án Part {index + 1}
-                          </h4>
+                          </h5>
+                          <p className="text-sm text-gray-500">
+                            {answer.title} • {(answer.sizebytes / 1024).toFixed(1)} KB
+                          </p>
                         </div>
-                        {answerUrl ? (
-                          <iframe
-                            src={answerUrl}
-                            className="w-full h-[400px]"
-                            title={`Đáp án Part ${index + 1}`}
-                          />
-                        ) : (
-                          <div className="h-[400px] flex items-center justify-center bg-gray-50">
-                            <p className="text-gray-500">Đang tải đáp án...</p>
-                          </div>
-                        )}
                       </div>
-                    );
-                  })}
+                      <button
+                        onClick={() => downloadAnswer(answer)}
+                        disabled={downloading[answer.id]}
+                        className="flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      >
+                        {downloading[answer.id] ? (
+                          <>
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                            Đang tải...
+                          </>
+                        ) : (
+                          <>
+                            <Download className="w-4 h-4 mr-2" />
+                            Tải về
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  ))}
                 </div>
-              ) : (
-                <div className="h-[600px] flex items-center justify-center bg-gray-50">
-                  <div className="text-center">
-                    <CheckCircle className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                    <p className="text-gray-500 mb-4">Nhấn "Hiện đáp án" để xem kết quả</p>
-                    <button
-                      onClick={toggleAnswers}
-                      className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700"
-                    >
-                      Hiện đáp án
-                    </button>
-                  </div>
+                
+                <div className="mt-6 pt-6 border-t border-gray-200">
+                  <button
+                    onClick={() => {
+                      // Download all answers at once
+                      answers.forEach(answer => downloadAnswer(answer));
+                    }}
+                    className="w-full flex items-center justify-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                  >
+                    <Download className="w-5 h-5 mr-2" />
+                    Tải tất cả đáp án ({answers.length} files)
+                  </button>
                 </div>
-              )}
+              </div>
             </div>
           )}
         </div>
