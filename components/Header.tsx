@@ -116,26 +116,32 @@ export default function Header({
                   Khóa học
                 </Link>
                 
-                {user ? (
-                  <div className="flex items-center space-x-3">
-                    <div className="flex items-center space-x-2 bg-gray-100 px-3 py-2 rounded-lg">
-                      <User className="h-4 w-4 text-gray-600" />
-                      <span className="text-sm text-gray-700 font-medium">{user.email}</span>
+                  {user ? (
+                    <div className="flex items-center space-x-3">
+                      <div className="flex items-center space-x-2 bg-gray-100 px-3 py-2 rounded-lg">
+                        <User className="h-4 w-4 text-gray-600" />
+                        <span className="text-sm text-gray-700 font-medium">{user.email}</span>
+                      </div>
+                      <Link
+                        href="/dashboard"
+                        className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+                      >
+                        Dashboard
+                      </Link>
+                      <Link
+                        href="/admin"
+                        className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors text-sm font-medium"
+                      >
+                        Admin
+                      </Link>
+                      <button
+                        onClick={handleLogout}
+                        className="flex items-center space-x-1 text-gray-500 hover:text-red-600 transition-colors text-sm"
+                      >
+                        <LogOut className="h-4 w-4" />
+                        <span>Đăng xuất</span>
+                      </button>
                     </div>
-                    <Link
-                      href="/dashboard"
-                      className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
-                    >
-                      Dashboard
-                    </Link>
-                    <button
-                      onClick={handleLogout}
-                      className="flex items-center space-x-1 text-gray-500 hover:text-red-600 transition-colors text-sm"
-                    >
-                      <LogOut className="h-4 w-4" />
-                      <span>Đăng xuất</span>
-                    </button>
-                  </div>
                 ) : (
                   <button
                     onClick={() => setShowAuthModal(true)}
