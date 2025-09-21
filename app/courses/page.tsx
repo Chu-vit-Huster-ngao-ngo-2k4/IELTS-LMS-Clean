@@ -23,16 +23,9 @@ export default function CoursesPage() {
   const router = useRouter()
 
   useEffect(() => {
-    if (!loading && !user) {
-      router.push('/auth/login')
-    }
-  }, [user, loading, router])
-
-  useEffect(() => {
-    if (user) {
-      fetchCourses()
-    }
-  }, [user])
+    // Allow all users to access courses without login
+    fetchCourses()
+  }, [])
 
   const fetchCourses = async () => {
     try {
@@ -70,10 +63,6 @@ export default function CoursesPage() {
     )
   }
 
-  if (!user) {
-    return null
-  }
-
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -81,11 +70,27 @@ export default function CoursesPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
             <div className="flex items-center">
-              <Link href="/dashboard" className="mr-4">
+              <Link href="/" className="mr-4">
                 <ArrowLeft className="h-6 w-6 text-gray-600 hover:text-gray-900" />
               </Link>
               <BookOpen className="h-8 w-8 text-primary-600" />
               <span className="ml-2 text-2xl font-bold text-gray-900">IELTS LMS</span>
+            </div>
+            <div className="flex space-x-4">
+              {user ? (
+                <Link href="/dashboard" className="text-gray-600 hover:text-gray-900">
+                  Dashboard
+                </Link>
+              ) : (
+                <>
+                  <Link href="/auth/login" className="text-gray-600 hover:text-gray-900">
+                    Đăng nhập
+                  </Link>
+                  <Link href="/auth/register" className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700">
+                    Đăng ký
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </div>

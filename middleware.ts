@@ -10,14 +10,14 @@ export async function middleware(req: NextRequest) {
     data: { session },
   } = await supabase.auth.getSession()
 
-  // Protect dashboard and course routes
+  // Protect dashboard routes only
   if (req.nextUrl.pathname.startsWith('/dashboard')) {
     if (!session) {
       return NextResponse.redirect(new URL('/auth/login', req.url))
     }
   }
   
-  // Temporarily allow courses without auth for testing
+  // Allow courses and lessons without auth - all users can learn
   // if (req.nextUrl.pathname.startsWith('/courses')) {
   //   if (!session) {
   //     return NextResponse.redirect(new URL('/auth/login', req.url))
