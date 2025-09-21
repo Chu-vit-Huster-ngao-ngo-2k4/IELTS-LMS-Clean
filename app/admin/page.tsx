@@ -44,8 +44,6 @@ export default function AdminDashboard() {
   const [editingCourse, setEditingCourse] = useState<Course | null>(null);
   const [editingLesson, setEditingLesson] = useState<Lesson | null>(null);
   const [editingAsset, setEditingAsset] = useState<Asset | null>(null);
-  const [activeUsers, setActiveUsers] = useState<any[]>([]);
-  const [recentActivity, setRecentActivity] = useState<any[]>([]);
 
   useEffect(() => {
     if (!user) {
@@ -60,8 +58,6 @@ export default function AdminDashboard() {
     
     if (!roleLoading && isAdmin) {
       fetchCourses();
-      fetchActiveUsers();
-      fetchRecentActivity();
     }
   }, [user, router, isAdmin, roleLoading]);
 
@@ -87,47 +83,6 @@ export default function AdminDashboard() {
     }
   };
 
-  const fetchActiveUsers = async () => {
-    try {
-      // Get users active in last 24 hours
-      const { data, error } = await supabase
-        .from('user_activity')
-        .select('user_id, user_email, action, created_at')
-        .gte('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString())
-        .order('created_at', { ascending: false })
-        .limit(50);
-
-      if (error) throw error;
-      
-      // Group by user and get latest activity
-      const userMap = new Map();
-      data?.forEach(activity => {
-        if (!userMap.has(activity.user_id) || 
-            new Date(activity.created_at) > new Date(userMap.get(activity.user_id).created_at)) {
-          userMap.set(activity.user_id, activity);
-        }
-      });
-      
-      setActiveUsers(Array.from(userMap.values()));
-    } catch (error) {
-      console.error('Error fetching active users:', error);
-    }
-  };
-
-  const fetchRecentActivity = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('user_activity')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(20);
-
-      if (error) throw error;
-      setRecentActivity(data || []);
-    } catch (error) {
-      console.error('Error fetching recent activity:', error);
-    }
-  };
 
   const getAssetIcon = (type: string) => {
     switch (type) {
@@ -311,50 +266,13 @@ export default function AdminDashboard() {
             <div className="flex items-center">
               <Users className="h-8 w-8 text-orange-600" />
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-500">Active Users (24h)</p>
-                <p className="text-2xl font-semibold text-gray-900">{activeUsers.length}</p>
+                <p className="text-sm font-medium text-gray-500">Active Users</p>
+                <p className="text-2xl font-semibold text-gray-900">-</p>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Active Users Section */}
-        <div className="bg-white rounded-lg shadow mb-8">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h3 className="text-lg font-medium text-gray-900">Active Users (Last 24 Hours)</h3>
-          </div>
-          <div className="p-6">
-            {activeUsers.length === 0 ? (
-              <div className="text-center py-8">
-                <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-500">No active users in the last 24 hours</p>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {activeUsers.map((user, index) => (
-                  <div key={user.user_id || index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                    <div className="flex items-center">
-                      <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                        <span className="text-blue-600 font-medium">
-                          {user.user_email?.charAt(0).toUpperCase()}
-                        </span>
-                      </div>
-                      <div className="ml-4">
-                        <p className="text-sm font-medium text-gray-900">{user.user_email}</p>
-                        <p className="text-xs text-gray-500">Last activity: {user.action}</p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-xs text-gray-500">
-                        {new Date(user.created_at).toLocaleString()}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
 
         {/* Main Content */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

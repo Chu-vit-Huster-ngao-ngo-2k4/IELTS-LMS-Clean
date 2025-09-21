@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react'
 import { useAuth } from '@/components/AuthProvider'
-import { useUserActivity } from '@/hooks/useUserActivity'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
@@ -19,7 +18,6 @@ interface Course {
 
 export default function CoursesPage() {
   const { user, loading } = useAuth()
-  const { logActivity } = useUserActivity()
   const [courses, setCourses] = useState<Course[]>([])
   const [loadingCourses, setLoadingCourses] = useState(true)
   const supabase = createClientComponentClient()
@@ -28,12 +26,7 @@ export default function CoursesPage() {
   useEffect(() => {
     // Allow all users to access courses without login
     fetchCourses()
-    
-    // Log page visit
-    if (user) {
-      logActivity('visited_courses_page', 'page', 'courses')
-    }
-  }, [user, logActivity])
+  }, [])
 
   const fetchCourses = async () => {
     try {
