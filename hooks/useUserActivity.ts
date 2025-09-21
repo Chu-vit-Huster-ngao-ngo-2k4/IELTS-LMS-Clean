@@ -1,9 +1,10 @@
 import { useAuth } from '@/components/AuthProvider';
-import { supabase } from '@/lib/supabase';
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { useCallback } from 'react';
 
 export const useUserActivity = () => {
   const { user } = useAuth();
+  const supabase = createClientComponentClient();
 
   const logActivity = useCallback(async (
     action: string,
@@ -14,16 +15,25 @@ export const useUserActivity = () => {
     if (!user) return;
 
     try {
-      await supabase.rpc('log_user_activity', {
-        p_action: action,
-        p_resource_type: resourceType || null,
-        p_resource_id: resourceId || null,
-        p_details: details || null
-      });
+      // Insert directly into user_activity table
+      const { error } = await supabase
+        .from('user_activity')
+        .insert({
+          user_id: user.id,
+          user_email: user.email,
+          action: action,
+          resource_type: resourceType || null,
+          resource_id: resourceId || null,
+          details: details || null
+        });
+
+      if (error) {
+        console.error('Error logging activity:', error);
+      }
     } catch (error) {
       console.error('Error logging activity:', error);
     }
-  }, [user]);
+  }, [user, supabase]);
 
   return { logActivity };
 };
