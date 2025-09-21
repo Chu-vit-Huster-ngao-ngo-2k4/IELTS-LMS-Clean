@@ -153,13 +153,9 @@ export default function CourseDetailPage({ params }: { params: { id: string } })
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-4">
                       <div className="flex-shrink-0">
-                        {lesson.progress?.status === 'completed' ? (
-                          <CheckCircle className="h-6 w-6 text-green-600" />
-                        ) : (
-                          <div className="h-6 w-6 rounded-full border-2 border-gray-300 flex items-center justify-center">
-                            <span className="text-xs font-medium text-gray-500">{index + 1}</span>
-                          </div>
-                        )}
+                        <div className="h-6 w-6 rounded-full border-2 border-gray-300 flex items-center justify-center">
+                          <span className="text-xs font-medium text-gray-500">{index + 1}</span>
+                        </div>
                       </div>
                       <div>
                         <h3 className="text-lg font-medium text-gray-900">{lesson.title}</h3>
