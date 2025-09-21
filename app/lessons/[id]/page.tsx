@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from '@supabase/supabase-js';
 import { useAuth } from '@/components/AuthProvider';
 import { useProgress } from '@/hooks/useProgress';
 import Header from '@/components/Header';
@@ -19,7 +19,10 @@ import { Lesson, Asset, Course } from '@/lib/types';
 export default function LessonPage() {
   const params = useParams();
   const router = useRouter();
-  const supabase = createClientComponentClient();
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
   const { user, loading: authLoading } = useAuth();
   const { markAsStarted, markAsCompleted } = useProgress();
   

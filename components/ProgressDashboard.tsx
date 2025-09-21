@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useProgress } from '@/hooks/useProgress';
 import { useAuth } from '@/components/AuthProvider';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from '@supabase/supabase-js';
 import { 
   BookOpen, 
   Trophy, 
@@ -19,7 +19,10 @@ import Link from 'next/link';
 export default function ProgressDashboard() {
   const { user } = useAuth();
   const { courseProgress, achievements, loading } = useProgress();
-  const supabase = createClientComponentClient();
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
 
   // Get actual course data from database
   const [courses, setCourses] = useState<any[]>([]);

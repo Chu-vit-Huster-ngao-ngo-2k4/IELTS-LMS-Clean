@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/components/AuthProvider';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from '@supabase/supabase-js';
 
 export interface UserProgress {
   id: number;
@@ -41,7 +41,10 @@ export interface UserAchievement {
 
 export const useProgress = () => {
   const { user } = useAuth();
-  const supabase = createClientComponentClient();
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
   const [loading, setLoading] = useState(false);
   const [courseProgress, setCourseProgress] = useState<UserCourseProgress[]>([]);
   const [achievements, setAchievements] = useState<UserAchievement[]>([]);
