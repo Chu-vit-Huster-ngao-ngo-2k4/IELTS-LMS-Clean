@@ -31,7 +31,7 @@ export function useUserRole() {
           'buiva@example.com', 
           'test@example.com',
           'admin@gmail.com',
-          'buiva@gmail.com'
+          'buivanbinh1310@gmail.com'
         ];
         
         const isAdminUser = adminEmails.includes(user.email || '');
