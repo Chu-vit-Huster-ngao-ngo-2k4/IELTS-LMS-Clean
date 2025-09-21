@@ -88,66 +88,49 @@ export default function Header({
 
   return (
     <>
-      <header className="bg-white/95 backdrop-blur-md shadow-lg border-b border-gray-200 sticky top-0 z-50">
+      <header className="bg-white shadow-sm sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-20">
+          <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
               {showBackButton && (
-                <Link href={backUrl} className="mr-6 group">
-                  <div className="p-2 rounded-full bg-gray-100 group-hover:bg-green-100 transition-colors duration-300">
-                    <ArrowLeft className="h-5 w-5 text-gray-600 group-hover:text-green-600 transition-colors" />
-                  </div>
+                <Link href={backUrl} className="mr-4">
+                  <ArrowLeft className="h-6 w-6 text-gray-600 hover:text-gray-900" />
                 </Link>
               )}
-              <div className="flex items-center group">
-                <div className="relative">
-                  <Image 
-                    src="/logo2.jpg" 
-                    alt="IELTS LMS Logo" 
-                    width={56} 
-                    height={56} 
-                    className="mr-4 rounded-full shadow-lg group-hover:scale-110 transition-transform duration-300"
-                  />
-                  <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full animate-pulse"></div>
-                </div>
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-green-600 bg-clip-text text-transparent group-hover:from-green-600 group-hover:to-purple-600 transition-all duration-300">
-                  {title}
-                </h1>
-              </div>
+              <Image 
+                src="/logo2.jpg" 
+                alt="IELTS LMS Logo" 
+                width={48} 
+                height={48} 
+                className="mr-3"
+              />
+              <h1 className="text-xl font-bold text-gray-900">{title}</h1>
             </div>
             
             {showAuth && (
-              <div className="flex items-center space-x-6">
-                <Link 
-                  href="/" 
-                  className="text-gray-600 hover:text-green-600 font-medium transition-colors duration-300 hover:scale-105 transform"
-                >
-                  🏠 Trang chủ
+              <div className="flex items-center space-x-4">
+                <Link href="/" className="text-gray-600 hover:text-gray-900">
+                  Trang chủ
                 </Link>
-                <Link 
-                  href="/courses" 
-                  className="text-gray-600 hover:text-green-600 font-medium transition-colors duration-300 hover:scale-105 transform"
-                >
-                  📚 Khóa học
+                <Link href="/courses" className="text-gray-600 hover:text-gray-900">
+                  Khóa học
                 </Link>
                 
                 {user ? (
-                  <div className="flex items-center space-x-4">
-                    <div className="flex items-center space-x-3 bg-gradient-to-r from-gray-100 to-green-50 px-4 py-3 rounded-xl border border-gray-200">
-                      <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center">
-                        <User className="h-4 w-4 text-white" />
-                      </div>
-                      <span className="text-sm text-gray-700 font-medium max-w-32 truncate">{user.email}</span>
+                  <div className="flex items-center space-x-3">
+                    <div className="flex items-center space-x-2 bg-gray-100 px-3 py-2 rounded-lg">
+                      <User className="h-4 w-4 text-gray-600" />
+                      <span className="text-sm text-gray-700 font-medium">{user.email}</span>
                     </div>
                     <Link
                       href="/dashboard"
-                      className="bg-gradient-to-r from-green-600 to-emerald-600 text-white px-6 py-3 rounded-xl hover:from-green-700 hover:to-emerald-700 transition-all duration-300 text-sm font-bold shadow-lg hover:shadow-xl transform hover:scale-105"
+                      className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
                     >
-                      🏠 Dashboard
+                      Dashboard
                     </Link>
                     <button
                       onClick={handleLogout}
-                      className="flex items-center space-x-2 text-gray-500 hover:text-red-600 transition-colors text-sm font-medium hover:scale-105 transform"
+                      className="flex items-center space-x-1 text-gray-500 hover:text-red-600 transition-colors text-sm"
                     >
                       <LogOut className="h-4 w-4" />
                       <span>Đăng xuất</span>
@@ -156,9 +139,9 @@ export default function Header({
                 ) : (
                   <button
                     onClick={() => setShowAuthModal(true)}
-                    className="bg-gradient-to-r from-green-600 to-emerald-600 text-white px-8 py-3 rounded-xl hover:from-green-700 hover:to-emerald-700 transition-all duration-300 text-sm font-bold shadow-lg hover:shadow-xl transform hover:scale-105"
+                    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
                   >
-                    🚀 Đăng nhập / Đăng ký
+                    Đăng nhập / Đăng ký
                   </button>
                 )}
               </div>
@@ -169,29 +152,26 @@ export default function Header({
 
       {/* Auth Modal */}
       {showAuthModal && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in-up">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto border border-gray-200">
-            <div className="p-8">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
               {/* Header */}
-              <div className="flex justify-between items-center mb-8">
-                <div className="flex items-center group">
-                  <div className="relative">
-                    <Image 
-                      src="/logo2.jpg" 
-                      alt="IELTS LMS Logo" 
-                      width={48} 
-                      height={48} 
-                      className="mr-4 rounded-full shadow-lg group-hover:scale-110 transition-transform duration-300"
-                    />
-                    <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-                  </div>
-                  <h2 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-green-600 bg-clip-text text-transparent">
-                    {isLogin ? '🔐 Đăng nhập' : '✨ Đăng ký'}
+              <div className="flex justify-between items-center mb-6">
+                <div className="flex items-center">
+                  <Image 
+                    src="/logo2.jpg" 
+                    alt="IELTS LMS Logo" 
+                    width={40} 
+                    height={40} 
+                    className="mr-3"
+                  />
+                  <h2 className="text-2xl font-bold text-gray-900">
+                    {isLogin ? 'Đăng nhập' : 'Đăng ký'}
                   </h2>
                 </div>
                 <button
                   onClick={() => setShowAuthModal(false)}
-                  className="text-gray-400 hover:text-gray-600 text-3xl hover:scale-110 transition-transform duration-300"
+                  className="text-gray-400 hover:text-gray-600 text-2xl"
                 >
                   ×
                 </button>
