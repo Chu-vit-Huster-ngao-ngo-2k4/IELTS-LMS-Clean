@@ -109,6 +109,9 @@ export default function Header({
             
             {showAuth && (
               <div className="flex items-center space-x-4">
+                <Link href="/" className="text-gray-600 hover:text-gray-900">
+                  Trang chủ
+                </Link>
                 <Link href="/courses" className="text-gray-600 hover:text-gray-900">
                   Khóa học
                 </Link>
