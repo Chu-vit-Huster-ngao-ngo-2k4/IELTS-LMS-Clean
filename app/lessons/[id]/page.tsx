@@ -231,6 +231,35 @@ export default function LessonPage() {
                    onComplete={handleVideoComplete}
                    isCompleted={videoCompleted}
                  />
+                 
+                 {/* Video Navigation - Outside video player */}
+                 {videos.length > 1 && (
+                   <div className="mt-4 flex items-center justify-between bg-gray-50 rounded-lg p-4">
+                     <div className="flex items-center space-x-2">
+                       <span className="text-sm font-medium text-gray-700">
+                         Video {currentVideoIndex + 1} / {videos.length}
+                       </span>
+                     </div>
+                     
+                     <div className="flex items-center space-x-3">
+                       <button
+                         onClick={() => setCurrentVideoIndex(currentVideoIndex - 1)}
+                         disabled={currentVideoIndex === 0}
+                         className="px-4 py-2 text-sm bg-white text-gray-700 rounded-lg hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors border border-gray-300"
+                       >
+                         ← Video trước
+                       </button>
+                       
+                       <button
+                         onClick={() => setCurrentVideoIndex(currentVideoIndex + 1)}
+                         disabled={currentVideoIndex === videos.length - 1}
+                         className="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                       >
+                         Video tiếp theo →
+                       </button>
+                     </div>
+                   </div>
+                 )}
                 
                 {/* Skip to exercises button */}
                 {!videoCompleted && exercises.length > 0 && course?.id === 1 && (

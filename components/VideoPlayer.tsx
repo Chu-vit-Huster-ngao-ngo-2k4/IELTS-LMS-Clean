@@ -230,34 +230,6 @@ export default function VideoPlayer({ videos, currentIndex, onVideoChange, onCom
         </div>
       </div>
 
-      {/* Video Navigation */}
-      {videos.length > 1 && (
-        <div className="mt-4 flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <span className="text-sm text-gray-600">
-              Video {currentIndex + 1} / {videos.length}
-            </span>
-          </div>
-          
-          <div className="flex items-center space-x-2">
-            <button
-              onClick={() => onVideoChange(currentIndex - 1)}
-              disabled={currentIndex === 0}
-              className="px-3 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            >
-              ← Trước
-            </button>
-            
-            <button
-              onClick={() => onVideoChange(currentIndex + 1)}
-              disabled={currentIndex === videos.length - 1}
-              className="px-3 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            >
-              Tiếp theo →
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
