@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { useAuth } from '@/components/AuthProvider';
+import { useProgress } from '@/hooks/useProgress';
 import Header from '@/components/Header';
 import VideoPlayer from '@/components/VideoPlayer';
 import AudioPlayerWrapper from '@/components/AudioPlayerWrapper';
@@ -20,6 +21,7 @@ export default function LessonPage() {
   const router = useRouter();
   const supabase = createClientComponentClient();
   const { user, loading: authLoading } = useAuth();
+  const { markAsStarted, markAsCompleted } = useProgress();
   
   const [lesson, setLesson] = useState<Lesson | null>(null);
   const [course, setCourse] = useState<Course | null>(null);
@@ -72,6 +74,11 @@ export default function LessonPage() {
 
       setLesson(lessonData);
       setCourse(lessonData.courses);
+
+      // Mark lesson as started
+      if (lessonData.courses) {
+        await markAsStarted(lessonData.courses.id, lessonData.id, 0);
+      }
 
       // Fetch assets for this lesson
       const { data: assetsData, error: assetsError } = await supabase
