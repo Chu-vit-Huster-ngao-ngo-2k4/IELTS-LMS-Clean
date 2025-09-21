@@ -15,17 +15,13 @@ export const useUserActivity = () => {
     if (!user) return;
 
     try {
-      // Insert directly into user_activity table
-      const { error } = await supabase
-        .from('user_activity')
-        .insert({
-          user_id: user.id,
-          user_email: user.email,
-          action: action,
-          resource_type: resourceType || null,
-          resource_id: resourceId || null,
-          details: details || null
-        });
+      // Use RPC function to log activity
+      const { error } = await supabase.rpc('log_user_activity', {
+        p_action: action,
+        p_resource_type: resourceType || null,
+        p_resource_id: resourceId || null,
+        p_details: details || null
+      });
 
       if (error) {
         console.error('Error logging activity:', error);

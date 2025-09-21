@@ -4,8 +4,8 @@ import { createClient } from '@supabase/supabase-js'
 // Client-side Supabase client
 export const supabase = createClientComponentClient()
 
-// Server-side Supabase client (using anon key for now)
+// Server-side Supabase client with service role
 export const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
 )
