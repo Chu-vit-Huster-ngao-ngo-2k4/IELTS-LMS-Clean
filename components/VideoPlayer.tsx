@@ -4,12 +4,15 @@ import { useState, useRef, useEffect } from 'react';
 import { Asset } from '@/lib/types';
 
 interface VideoPlayerProps {
-  video: Asset;
+  videos: Asset[];
+  currentIndex: number;
+  onVideoChange: (index: number) => void;
   onComplete: () => void;
   isCompleted: boolean;
 }
 
-export default function VideoPlayer({ video, onComplete, isCompleted }: VideoPlayerProps) {
+export default function VideoPlayer({ videos, currentIndex, onVideoChange, onComplete, isCompleted }: VideoPlayerProps) {
+  const currentVideo = videos[currentIndex];
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -22,8 +25,10 @@ export default function VideoPlayer({ video, onComplete, isCompleted }: VideoPla
   const progressRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    getSignedUrl();
-  }, [video]);
+    if (currentVideo) {
+      getSignedUrl();
+    }
+  }, [currentVideo]);
 
   const getSignedUrl = async () => {
     try {
@@ -34,8 +39,8 @@ export default function VideoPlayer({ video, onComplete, isCompleted }: VideoPla
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          key: video.providerkey,
-          filename: video.title
+          key: currentVideo.providerkey,
+          filename: currentVideo.title
         }),
       });
 
@@ -224,6 +229,35 @@ export default function VideoPlayer({ video, onComplete, isCompleted }: VideoPla
           </div>
         </div>
       </div>
+
+      {/* Video Navigation */}
+      {videos.length > 1 && (
+        <div className="mt-4 flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <span className="text-sm text-gray-600">
+              Video {currentIndex + 1} / {videos.length}
+            </span>
+          </div>
+          
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={() => onVideoChange(currentIndex - 1)}
+              disabled={currentIndex === 0}
+              className="px-3 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              ← Trước
+            </button>
+            
+            <button
+              onClick={() => onVideoChange(currentIndex + 1)}
+              disabled={currentIndex === videos.length - 1}
+              className="px-3 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              Tiếp theo →
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

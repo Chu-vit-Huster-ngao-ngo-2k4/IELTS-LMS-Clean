@@ -149,17 +149,6 @@ export default function LessonPage() {
     }
   };
 
-  const nextVideo = () => {
-    if (currentVideoIndex < videos.length - 1) {
-      setCurrentVideoIndex(currentVideoIndex + 1);
-    }
-  };
-
-  const prevVideo = () => {
-    if (currentVideoIndex > 0) {
-      setCurrentVideoIndex(currentVideoIndex - 1);
-    }
-  };
 
   if (authLoading) {
     return (
@@ -231,42 +220,17 @@ export default function LessonPage() {
             {/* Video Section */}
             {videos.length > 0 && (
               <div className="bg-white rounded-lg shadow-sm border p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-lg font-semibold text-gray-900">
-                    Video Bài Học
-                  </h2>
-                  {videos.length > 1 && (
-                    <div className="flex items-center space-x-2">
-                      <button
-                        onClick={prevVideo}
-                        disabled={currentVideoIndex === 0}
-                        className="p-2 text-gray-500 hover:text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                        </svg>
-                      </button>
-                      <span className="text-sm text-gray-600">
-                        {currentVideoIndex + 1} / {videos.length}
-                      </span>
-                      <button
-                        onClick={nextVideo}
-                        disabled={currentVideoIndex === videos.length - 1}
-                        className="p-2 text-gray-500 hover:text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                        </svg>
-                      </button>
-                    </div>
-                  )}
-                </div>
+                 <h2 className="text-lg font-semibold text-gray-900 mb-4">
+                   Video Bài Học
+                 </h2>
                 
-                <VideoPlayer
-                  video={videos[currentVideoIndex]}
-                  onComplete={handleVideoComplete}
-                  isCompleted={videoCompleted}
-                />
+                 <VideoPlayer
+                   videos={videos}
+                   currentIndex={currentVideoIndex}
+                   onVideoChange={setCurrentVideoIndex}
+                   onComplete={handleVideoComplete}
+                   isCompleted={videoCompleted}
+                 />
                 
                 {/* Skip to exercises button */}
                 {!videoCompleted && exercises.length > 0 && course?.id === 1 && (
