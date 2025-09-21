@@ -1,7 +1,9 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { useProgress } from '@/hooks/useProgress';
 import { useAuth } from '@/components/AuthProvider';
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { 
   BookOpen, 
   Trophy, 
@@ -17,6 +19,7 @@ import Link from 'next/link';
 export default function ProgressDashboard() {
   const { user } = useAuth();
   const { courseProgress, achievements, loading } = useProgress();
+  const supabase = createClientComponentClient();
 
   if (loading) {
     return (
@@ -26,10 +29,37 @@ export default function ProgressDashboard() {
     );
   }
 
-  const totalCourses = courseProgress.length;
+  // Get actual course data from database
+  const [courses, setCourses] = useState<any[]>([]);
+  const [loadingCourses, setLoadingCourses] = useState(true);
+
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('courses')
+          .select(`
+            *,
+            lessons(count)
+          `)
+          .order('id');
+
+        if (error) throw error;
+        setCourses(data || []);
+      } catch (error) {
+        console.error('Error fetching courses:', error);
+      } finally {
+        setLoadingCourses(false);
+      }
+    };
+
+    fetchCourses();
+  }, []);
+
+  const totalCourses = courses.length;
   const completedCourses = courseProgress.filter(cp => cp.overall_progress === 100).length;
   const inProgressCourses = courseProgress.filter(cp => cp.overall_progress > 0 && cp.overall_progress < 100).length;
-  const totalLessons = courseProgress.reduce((sum, cp) => sum + cp.total_lessons, 0);
+  const totalLessons = courses.reduce((sum, course) => sum + (course.lessons?.[0]?.count || 0), 0);
   const completedLessons = courseProgress.reduce((sum, cp) => sum + cp.completed_lessons, 0);
   const totalAssets = courseProgress.reduce((sum, cp) => sum + cp.total_assets, 0);
   const completedAssets = courseProgress.reduce((sum, cp) => sum + cp.completed_assets, 0);
@@ -110,39 +140,39 @@ export default function ProgressDashboard() {
         </div>
         <div className="p-6">
           <div className="space-y-4">
-            {courseProgress.length === 0 ? (
+            {courses.length === 0 ? (
               <div className="text-center py-8">
                 <BookOpen className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-500 mb-4">Bạn chưa bắt đầu khóa học nào</p>
-                <Link
-                  href="/courses"
-                  className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                >
-                  <BookOpen className="h-4 w-4 mr-2" />
-                  Khám phá khóa học
-                </Link>
+                <p className="text-gray-500 mb-4">Không có khóa học nào</p>
               </div>
             ) : (
-              courseProgress.map((course) => (
-                <div key={course.id} className="border rounded-lg p-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <h4 className="font-medium text-gray-900">Khóa học #{course.course_id}</h4>
-                    <span className="text-sm text-gray-500">
-                      {course.overall_progress}%
-                    </span>
+              courses.map((course) => {
+                const progress = courseProgress.find(cp => cp.course_id === course.id);
+                const progressPercentage = progress ? progress.overall_progress : 0;
+                const totalLessons = course.lessons?.[0]?.count || 0;
+                const completedLessons = progress ? progress.completed_lessons : 0;
+                
+                return (
+                  <div key={course.id} className="border rounded-lg p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <h4 className="font-medium text-gray-900">{course.title}</h4>
+                      <span className="text-sm text-gray-500">
+                        {progressPercentage}%
+                      </span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2 mb-2">
+                      <div
+                        className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                        style={{ width: `${progressPercentage}%` }}
+                      ></div>
+                    </div>
+                    <div className="flex justify-between text-sm text-gray-500">
+                      <span>{completedLessons}/{totalLessons} bài học</span>
+                      <span>{progress ? `${progress.completed_assets}/${progress.total_assets} nội dung` : 'Chưa bắt đầu'}</span>
+                    </div>
                   </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2 mb-2">
-                    <div
-                      className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                      style={{ width: `${course.overall_progress}%` }}
-                    ></div>
-                  </div>
-                  <div className="flex justify-between text-sm text-gray-500">
-                    <span>{course.completed_assets}/{course.total_assets} nội dung</span>
-                    <span>{course.completed_lessons}/{course.total_lessons} bài học</span>
-                  </div>
-                </div>
-              ))
+                );
+              })
             )}
           </div>
         </div>
