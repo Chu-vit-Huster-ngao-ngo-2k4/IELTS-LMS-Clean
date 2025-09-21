@@ -10,35 +10,35 @@ export default function HomePage() {
   const { user, loading } = useAuth();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-100">
       <Header title="IELTS Learning Management System" />
 
       {/* Hero Section */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="text-center">
-          <h1 className="text-4xl font-bold text-gray-900 mb-6">
-            Hệ thống học IELTS toàn diện
+          <h1 className="text-5xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 mb-6 animate-pulse">
+            🎯 Hệ thống học IELTS toàn diện
           </h1>
-          <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
+          <p className="text-xl md:text-2xl text-gray-700 mb-8 max-w-3xl mx-auto font-medium">
             Từ nền tảng đến chuyên sâu, trang bị đầy đủ kiến thức và kỹ năng để đạt điểm IELTS cao
           </p>
           <div className="flex justify-center space-x-4">
             {user ? (
               <Link
                 href="/courses"
-                className="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center"
+                className="group bg-gradient-to-r from-green-500 to-emerald-600 text-white px-10 py-4 rounded-2xl hover:from-green-600 hover:to-emerald-700 transition-all duration-300 flex items-center font-bold text-lg shadow-lg hover:shadow-xl transform hover:scale-105"
               >
-                <Play className="h-5 w-5 mr-2" />
-                Bắt đầu học ngay
+                <Play className="h-6 w-6 mr-3 group-hover:scale-110 transition-transform" />
+                🚀 Bắt đầu học ngay
               </Link>
             ) : (
               <div className="text-center">
                 <p className="text-gray-600 mb-4">Vui lòng đăng nhập để truy cập khóa học</p>
                 <Link
                   href="/auth/login"
-                  className="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors inline-flex items-center"
+                  className="group bg-gradient-to-r from-green-500 to-emerald-600 text-white px-10 py-4 rounded-2xl hover:from-green-600 hover:to-emerald-700 transition-all duration-300 inline-flex items-center font-bold text-lg shadow-lg hover:shadow-xl transform hover:scale-105"
                 >
-                  Đăng nhập
+                  🔐 Đăng nhập
                 </Link>
               </div>
             )}
@@ -47,34 +47,43 @@ export default function HomePage() {
       </div>
 
       {/* Features */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+        <div className="text-center mb-16">
+          <h2 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-emerald-600 mb-4">
+            ✨ Tại sao chọn chúng tôi?
+          </h2>
+          <p className="text-xl text-gray-700 font-medium">
+            Hệ thống học IELTS hiện đại với công nghệ tiên tiến
+          </p>
+        </div>
+        
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="bg-white rounded-lg shadow-md p-6 text-center">
-            <div className="bg-blue-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
-              <BookOpen className="h-8 w-8 text-blue-600" />
+          <div className="group bg-white rounded-3xl shadow-xl hover:shadow-2xl p-8 text-center transition-all duration-300 transform hover:-translate-y-2 border-2 border-transparent hover:border-green-200">
+            <div className="bg-gradient-to-br from-green-400 to-emerald-500 rounded-3xl w-20 h-20 flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+              <BookOpen className="h-10 w-10 text-white" />
             </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">Khóa học đa dạng</h3>
-            <p className="text-gray-600">
-              Từ vựng, ngữ pháp, phát âm đến listening gap-filling
+            <h3 className="text-2xl font-black text-gray-900 mb-4">📚 Khóa học đa dạng</h3>
+            <p className="text-gray-600 text-lg leading-relaxed">
+              Từ vựng, ngữ pháp, phát âm đến listening gap-filling với nội dung phong phú
             </p>
           </div>
 
-          <div className="bg-white rounded-lg shadow-md p-6 text-center">
-            <div className="bg-green-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
-              <Play className="h-8 w-8 text-green-600" />
+          <div className="group bg-white rounded-3xl shadow-xl hover:shadow-2xl p-8 text-center transition-all duration-300 transform hover:-translate-y-2 border-2 border-transparent hover:border-emerald-200">
+            <div className="bg-gradient-to-br from-emerald-400 to-teal-500 rounded-3xl w-20 h-20 flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+              <Play className="h-10 w-10 text-white" />
             </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">Video chất lượng cao</h3>
-            <p className="text-gray-600">
+            <h3 className="text-2xl font-black text-gray-900 mb-4">🎥 Video chất lượng cao</h3>
+            <p className="text-gray-600 text-lg leading-relaxed">
               Video bài giảng rõ nét, dễ hiểu với hệ thống streaming hiện đại
             </p>
           </div>
 
-          <div className="bg-white rounded-lg shadow-md p-6 text-center">
-            <div className="bg-purple-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
-              <Award className="h-8 w-8 text-purple-600" />
+          <div className="group bg-white rounded-3xl shadow-xl hover:shadow-2xl p-8 text-center transition-all duration-300 transform hover:-translate-y-2 border-2 border-transparent hover:border-teal-200">
+            <div className="bg-gradient-to-br from-teal-400 to-cyan-500 rounded-3xl w-20 h-20 flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+              <Award className="h-10 w-10 text-white" />
             </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">Theo dõi tiến độ</h3>
-            <p className="text-gray-600">
+            <h3 className="text-2xl font-black text-gray-900 mb-4">🏆 Theo dõi tiến độ</h3>
+            <p className="text-gray-600 text-lg leading-relaxed">
               Hệ thống theo dõi tiến độ học tập chi tiết và chính xác
             </p>
           </div>
@@ -83,61 +92,79 @@ export default function HomePage() {
 
       {/* Course Preview - Only show if logged in */}
       {user && (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Khóa học nổi bật</h2>
-            <p className="text-gray-600">Bắt đầu hành trình học IELTS của bạn</p>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-emerald-600 mb-4">
+              🌟 Khóa học nổi bật
+            </h2>
+            <p className="text-xl text-gray-700 font-medium">Bắt đầu hành trình học IELTS của bạn</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="bg-white rounded-lg shadow-md overflow-hidden">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="group bg-white rounded-3xl shadow-xl hover:shadow-2xl overflow-hidden transition-all duration-300 transform hover:-translate-y-2 border-2 border-transparent hover:border-green-200">
+              <div className="bg-gradient-to-br from-green-400 to-emerald-500 h-32 flex items-center justify-center">
+                <BookOpen className="h-16 w-16 text-white" />
+              </div>
               <div className="p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Từ vựng cơ bản</h3>
-                <p className="text-gray-600 text-sm mb-4">Nền tảng từ vựng IELTS</p>
+                <h3 className="text-xl font-black text-gray-900 mb-3">📚 Từ vựng cơ bản</h3>
+                <p className="text-gray-600 mb-6 text-sm">Nền tảng từ vựng IELTS vững chắc</p>
                 <Link
                   href="/courses/1"
-                  className="text-blue-600 hover:text-blue-700 flex items-center"
+                  className="group/link inline-flex items-center text-green-600 hover:text-green-700 font-bold transition-colors"
                 >
-                  Xem chi tiết <ArrowRight className="h-4 w-4 ml-1" />
+                  Xem chi tiết 
+                  <ArrowRight className="h-4 w-4 ml-2 group-hover/link:translate-x-1 transition-transform" />
                 </Link>
               </div>
             </div>
 
-            <div className="bg-white rounded-lg shadow-md overflow-hidden">
+            <div className="group bg-white rounded-3xl shadow-xl hover:shadow-2xl overflow-hidden transition-all duration-300 transform hover:-translate-y-2 border-2 border-transparent hover:border-emerald-200">
+              <div className="bg-gradient-to-br from-emerald-400 to-teal-500 h-32 flex items-center justify-center">
+                <Award className="h-16 w-16 text-white" />
+              </div>
               <div className="p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Ngữ pháp cơ bản</h3>
-                <p className="text-gray-600 text-sm mb-4">Cấu trúc ngữ pháp quan trọng</p>
+                <h3 className="text-xl font-black text-gray-900 mb-3">📖 Ngữ pháp cơ bản</h3>
+                <p className="text-gray-600 mb-6 text-sm">Cấu trúc ngữ pháp quan trọng</p>
                 <Link
                   href="/courses/2"
-                  className="text-blue-600 hover:text-blue-700 flex items-center"
+                  className="group/link inline-flex items-center text-emerald-600 hover:text-emerald-700 font-bold transition-colors"
                 >
-                  Xem chi tiết <ArrowRight className="h-4 w-4 ml-1" />
+                  Xem chi tiết 
+                  <ArrowRight className="h-4 w-4 ml-2 group-hover/link:translate-x-1 transition-transform" />
                 </Link>
               </div>
             </div>
 
-            <div className="bg-white rounded-lg shadow-md overflow-hidden">
+            <div className="group bg-white rounded-3xl shadow-xl hover:shadow-2xl overflow-hidden transition-all duration-300 transform hover:-translate-y-2 border-2 border-transparent hover:border-teal-200">
+              <div className="bg-gradient-to-br from-teal-400 to-cyan-500 h-32 flex items-center justify-center">
+                <Play className="h-16 w-16 text-white" />
+              </div>
               <div className="p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Phát âm cơ bản</h3>
-                <p className="text-gray-600 text-sm mb-4">Kỹ thuật phát âm chuẩn</p>
+                <h3 className="text-xl font-black text-gray-900 mb-3">🎤 Phát âm cơ bản</h3>
+                <p className="text-gray-600 mb-6 text-sm">Kỹ thuật phát âm chuẩn</p>
                 <Link
                   href="/courses/3"
-                  className="text-blue-600 hover:text-blue-700 flex items-center"
+                  className="group/link inline-flex items-center text-teal-600 hover:text-teal-700 font-bold transition-colors"
                 >
-                  Xem chi tiết <ArrowRight className="h-4 w-4 ml-1" />
+                  Xem chi tiết 
+                  <ArrowRight className="h-4 w-4 ml-2 group-hover/link:translate-x-1 transition-transform" />
                 </Link>
               </div>
             </div>
 
-            <div className="bg-white rounded-lg shadow-md overflow-hidden">
+            <div className="group bg-white rounded-3xl shadow-xl hover:shadow-2xl overflow-hidden transition-all duration-300 transform hover:-translate-y-2 border-2 border-transparent hover:border-cyan-200">
+              <div className="bg-gradient-to-br from-cyan-400 to-blue-500 h-32 flex items-center justify-center">
+                <Users className="h-16 w-16 text-white" />
+              </div>
               <div className="p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Listening Gap-Filling</h3>
-                <p className="text-gray-600 text-sm mb-4">Kỹ năng nghe và điền từ</p>
+                <h3 className="text-xl font-black text-gray-900 mb-3">🎧 Listening Gap-Filling</h3>
+                <p className="text-gray-600 mb-6 text-sm">Kỹ năng nghe và điền từ</p>
                 <Link
                   href="/courses/4"
-                  className="text-blue-600 hover:text-blue-700 flex items-center"
+                  className="group/link inline-flex items-center text-cyan-600 hover:text-cyan-700 font-bold transition-colors"
                 >
-                  Xem chi tiết <ArrowRight className="h-4 w-4 ml-1" />
+                  Xem chi tiết 
+                  <ArrowRight className="h-4 w-4 ml-2 group-hover/link:translate-x-1 transition-transform" />
                 </Link>
               </div>
             </div>
