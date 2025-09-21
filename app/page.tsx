@@ -1,30 +1,15 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
+import Header from '@/components/Header';
 import { BookOpen, Play, Users, Award, ArrowRight, Mail, Phone, MessageCircle } from 'lucide-react';
 
 export default function HomePage() {
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      {/* Header */}
-      <header className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
-              <BookOpen className="h-8 w-8 text-blue-600 mr-2" />
-              <h1 className="text-xl font-bold text-gray-900">IELTS Learning Management System</h1>
-            </div>
-            <nav className="flex space-x-4">
-              <Link href="/courses" className="text-gray-600 hover:text-gray-900">
-                Khóa học
-              </Link>
-              <Link href="/simple-courses" className="text-gray-600 hover:text-gray-900">
-                Khóa học (Simple)
-              </Link>
-            </nav>
-          </div>
-        </div>
-      </header>
+      <Header title="IELTS Learning Management System" />
 
       {/* Hero Section */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
@@ -42,13 +27,6 @@ export default function HomePage() {
             >
               <Play className="h-5 w-5 mr-2" />
               Bắt đầu học ngay
-            </Link>
-            <Link
-              href="/simple-courses"
-              className="bg-gray-200 text-gray-800 px-8 py-3 rounded-lg hover:bg-gray-300 transition-colors flex items-center"
-            >
-              <BookOpen className="h-5 w-5 mr-2" />
-              Khóa học (Simple)
             </Link>
           </div>
         </div>
@@ -248,10 +226,16 @@ export default function HomePage() {
       <footer className="bg-gray-800 text-white py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <div className="flex items-center justify-center mb-4">
-              <BookOpen className="h-8 w-8 text-blue-400 mr-2" />
-              <h3 className="text-xl font-bold">IELTS LMS</h3>
-            </div>
+        <div className="flex items-center justify-center mb-4">
+          <Image 
+            src="/logo2.jpg" 
+            alt="IELTS LMS Logo" 
+            width={48} 
+            height={48} 
+            className="mr-3"
+          />
+          <h3 className="text-xl font-bold">IELTS LMS</h3>
+        </div>
             <p className="text-gray-400 mb-4">
               Hệ thống quản lý học tập IELTS toàn diện
             </p>
@@ -259,13 +243,11 @@ export default function HomePage() {
               <Link href="/courses" className="text-gray-400 hover:text-white">
                 Khóa học
               </Link>
-              <Link href="/simple-courses" className="text-gray-400 hover:text-white">
-                Khóa học (Simple)
-              </Link>
             </div>
           </div>
         </div>
       </footer>
+
     </div>
   );
 }

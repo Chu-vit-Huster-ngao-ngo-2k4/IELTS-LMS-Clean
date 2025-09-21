@@ -6,6 +6,16 @@
   html {
     font-family: system-ui, sans-serif;
   }
+  
+  /* Favicon tròn */
+  link[rel="icon"] {
+    border-radius: 50% !important;
+  }
+  
+  /* Apple touch icon tròn */
+  link[rel="apple-touch-icon"] {
+    border-radius: 50% !important;
+  }
 }
 
 @layer components {

@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { useAuth } from '@/components/AuthProvider';
+import Header from '@/components/Header';
 import VideoPlayer from '@/components/VideoPlayer';
 import AudioPlayerWrapper from '@/components/AudioPlayerWrapper';
 import ListeningLessonViewer from '@/components/ListeningLessonViewer';
@@ -216,40 +217,12 @@ export default function LessonPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div>
-              <h1 className="text-xl font-semibold text-gray-900">
-                {course?.title}
-              </h1>
-              <p className="text-sm text-gray-600">
-                {lesson.title}
-              </p>
-            </div>
-            <button
-              onClick={() => {
-                try {
-                  if (window.history.length > 1) {
-                    window.history.back();
-                  } else {
-                    router.push('/simple-courses');
-                  }
-                } catch (error) {
-                  router.push('/simple-courses');
-                }
-              }}
-              className="text-gray-500 hover:text-gray-700 flex items-center"
-            >
-              <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-              </svg>
-              Quay lại khóa học
-            </button>
-          </div>
-        </div>
-      </div>
+      <Header 
+        showBackButton={true} 
+        backUrl={`/courses/${course?.id}`} 
+        title={`${course?.title} - ${lesson.title}`}
+        showAuth={false}
+      />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

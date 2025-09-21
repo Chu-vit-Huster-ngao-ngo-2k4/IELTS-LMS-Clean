@@ -5,33 +5,30 @@ import { useAuth } from '@/components/AuthProvider'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { BookOpen, Play, Clock, CheckCircle, ArrowLeft, ArrowRight } from 'lucide-react'
+import Header from '@/components/Header'
+import { BookOpen, Play, Clock, CheckCircle, ArrowRight } from 'lucide-react'
 
 interface Lesson {
   id: number
   title: string
-  order_idx: number
-  created_at: string
+  orderindex: number
+  createdat: string
   assets: Asset[]
-  progress?: {
-    status: string
-    last_position_sec: number
-  }
 }
 
 interface Asset {
   id: number
   title: string
-  provider_key: string
-  mime_type: string
-  size_bytes: number
+  providerkey: string
+  mimetype: string
+  sizebytes: number
 }
 
 interface Course {
   id: number
   title: string
   description: string
-  created_at: string
+  createdat: string
 }
 
 export default function CourseDetailPage({ params }: { params: { id: string } }) {
@@ -43,39 +40,32 @@ export default function CourseDetailPage({ params }: { params: { id: string } })
   const router = useRouter()
 
   useEffect(() => {
-    if (!loading && !user) {
-      router.push('/auth/login')
-    }
-  }, [user, loading, router])
-
-  useEffect(() => {
-    if (user && params.id) {
+    // Allow all users to access courses without login
+    if (params.id) {
       fetchCourseData()
     }
-  }, [user, params.id])
+  }, [params.id])
 
   const fetchCourseData = async () => {
     try {
       // Fetch course info
       const { data: courseData, error: courseError } = await supabase
-        .from('Courses')
+        .from('courses')
         .select('*')
         .eq('id', params.id)
         .single()
 
       if (courseError) throw courseError
 
-      // Fetch lessons with assets and progress
+      // Fetch lessons with assets
       const { data: lessonsData, error: lessonsError } = await supabase
-        .from('Lessons')
+        .from('lessons')
         .select(`
           *,
-          Assets(*),
-          Progress!left(user_id, lesson_id, status, last_position_sec)
+          assets(*)
         `)
-        .eq('course_id', params.id)
-        .eq('Progress.user_id', user?.id)
-        .order('order_idx')
+        .eq('courseid', params.id)
+        .order('orderindex')
 
       if (lessonsError) throw lessonsError
 
@@ -88,30 +78,6 @@ export default function CourseDetailPage({ params }: { params: { id: string } })
     }
   }
 
-  const updateProgress = async (lessonId: number, status: string, position: number = 0) => {
-    try {
-      const { error } = await supabase
-        .from('Progress')
-        .upsert({
-          user_id: user?.id,
-          lesson_id: lessonId,
-          status,
-          last_position_sec: position,
-          updated_at: new Date().toISOString()
-        })
-
-      if (error) throw error
-
-      // Update local state
-      setLessons(prev => prev.map(lesson => 
-        lesson.id === lessonId 
-          ? { ...lesson, progress: { status, last_position_sec: position } }
-          : lesson
-      ))
-    } catch (error) {
-      console.error('Error updating progress:', error)
-    }
-  }
 
   if (loading || loadingData) {
     return (
@@ -124,29 +90,24 @@ export default function CourseDetailPage({ params }: { params: { id: string } })
     )
   }
 
-  if (!user || !course) {
-    return null
+  if (!course) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <BookOpen className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+          <h3 className="text-lg font-medium text-gray-900 mb-2">Không tìm thấy khóa học</h3>
+          <p className="text-gray-600">Khóa học này không tồn tại hoặc đã bị xóa.</p>
+        </div>
+      </div>
+    )
   }
 
-  const completedLessons = lessons.filter(lesson => lesson.progress?.status === 'completed').length
-  const progressPercentage = lessons.length > 0 ? (completedLessons / lessons.length) * 100 : 0
+  const completedLessons = 0 // No progress tracking for now
+  const progressPercentage = 0 // No progress tracking for now
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
-            <div className="flex items-center">
-              <Link href="/courses" className="mr-4">
-                <ArrowLeft className="h-6 w-6 text-gray-600 hover:text-gray-900" />
-              </Link>
-              <BookOpen className="h-8 w-8 text-primary-600" />
-              <span className="ml-2 text-2xl font-bold text-gray-900">IELTS LMS</span>
-            </div>
-          </div>
-        </div>
-      </header>
+      <Header showBackButton={true} backUrl="/courses" title="IELTS LMS" />
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -205,24 +166,21 @@ export default function CourseDetailPage({ params }: { params: { id: string } })
                         <div className="flex items-center space-x-4 text-sm text-gray-500 mt-1">
                           <div className="flex items-center">
                             <Play className="h-4 w-4 mr-1" />
-                            {lesson.assets.length} tài liệu
+                            {lesson.assets?.length || 0} tài liệu
                           </div>
                           <div className="flex items-center">
                             <Clock className="h-4 w-4 mr-1" />
-                            {lesson.assets.filter(a => a.mime_type?.startsWith('video')).length > 0 ? 'Video' : 'Audio'}
+                            {lesson.assets?.filter(a => a.mimetype?.startsWith('video')).length > 0 ? 'Video' : 'Audio'}
                           </div>
                         </div>
                       </div>
                     </div>
                     <div className="flex items-center space-x-2">
-                      {lesson.progress?.status === 'completed' && (
-                        <span className="text-sm text-green-600 font-medium">Hoàn thành</span>
-                      )}
                       <Link 
                         href={`/lessons/${lesson.id}`}
                         className="btn-primary text-sm"
                       >
-                        {lesson.progress?.status === 'completed' ? 'Xem lại' : 'Bắt đầu'}
+                        Bắt đầu
                       </Link>
                     </div>
                   </div>

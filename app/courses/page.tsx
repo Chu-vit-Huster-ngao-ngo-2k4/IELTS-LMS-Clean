@@ -5,7 +5,8 @@ import { useAuth } from '@/components/AuthProvider'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { BookOpen, Play, Clock, ArrowLeft } from 'lucide-react'
+import Header from '@/components/Header'
+import { BookOpen, Play, Clock } from 'lucide-react'
 
 interface Course {
   id: number
@@ -30,10 +31,10 @@ export default function CoursesPage() {
   const fetchCourses = async () => {
     try {
       const { data, error } = await supabase
-        .from('Courses')
+        .from('courses')
         .select(`
           *,
-          Lessons(count)
+          lessons(count)
         `)
         .order('createdat', { ascending: false })
 
@@ -41,7 +42,7 @@ export default function CoursesPage() {
 
       const coursesWithStats = data?.map(course => ({
         ...course,
-        lessons_count: course.Lessons?.[0]?.count || 0
+        lessons_count: course.lessons?.[0]?.count || 0
       })) || []
 
       setCourses(coursesWithStats)
@@ -65,36 +66,7 @@ export default function CoursesPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
-            <div className="flex items-center">
-              <Link href="/" className="mr-4">
-                <ArrowLeft className="h-6 w-6 text-gray-600 hover:text-gray-900" />
-              </Link>
-              <BookOpen className="h-8 w-8 text-primary-600" />
-              <span className="ml-2 text-2xl font-bold text-gray-900">IELTS LMS</span>
-            </div>
-            <div className="flex space-x-4">
-              {user ? (
-                <Link href="/dashboard" className="text-gray-600 hover:text-gray-900">
-                  Dashboard
-                </Link>
-              ) : (
-                <>
-                  <Link href="/auth/login" className="text-gray-600 hover:text-gray-900">
-                    Đăng nhập
-                  </Link>
-                  <Link href="/auth/register" className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700">
-                    Đăng ký
-                  </Link>
-                </>
-              )}
-            </div>
-          </div>
-        </div>
-      </header>
+      <Header showBackButton={true} backUrl="/" title="IELTS LMS" />
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
