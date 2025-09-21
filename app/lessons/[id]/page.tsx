@@ -289,16 +289,6 @@ export default function LessonPage() {
               </div>
             )}
 
-            {/* Debug Info */}
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
-              <h3 className="font-semibold text-yellow-800 mb-2">Debug Info:</h3>
-              <p className="text-sm text-yellow-700">Course ID: {course?.id}</p>
-              <p className="text-sm text-yellow-700">Exercises count: {exercises.length}</p>
-              <p className="text-sm text-yellow-700">Answers count: {answers.length}</p>
-              <p className="text-sm text-yellow-700">Audios count: {audios.length}</p>
-              <p className="text-sm text-yellow-700">Show exercises: {exercises.length > 0 && (course?.id === 1 || course?.id === 3) ? 'YES' : 'NO'}</p>
-              <p className="text-sm text-yellow-700">Show listening: {audios.length > 0 && course?.id === 4 ? 'YES' : 'NO'}</p>
-            </div>
 
       {/* Exercise Quiz - Always show for vocabulary and pronunciation lessons if exercises available */}
       {exercises.length > 0 && (course?.id === 1 || course?.id === 3) && (
