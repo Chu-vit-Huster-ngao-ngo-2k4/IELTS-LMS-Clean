@@ -25,20 +25,20 @@ export function useUserRole() {
       }
 
       try {
-        // Get user profile with role
-        const { data: profile, error: profileError } = await supabase
-          .from('user_profiles')
+        // Get user role from user_roles table
+        const { data: userRole, error: roleError } = await supabase
+          .from('user_roles')
           .select('role')
           .eq('user_id', user.id)
           .single();
 
-        if (profileError) {
-          console.error('Error fetching user profile:', profileError);
-          // Default to regular user if no profile found
+        if (roleError) {
+          console.error('Error fetching user role:', roleError);
+          // Default to regular user if no role found
           setIsAdmin(false);
           setIsInstructor(false);
         } else {
-          const role = profile?.role || 'user';
+          const role = userRole?.role || 'user';
           setIsAdmin(role === 'admin');
           setIsInstructor(role === 'instructor' || role === 'admin');
         }

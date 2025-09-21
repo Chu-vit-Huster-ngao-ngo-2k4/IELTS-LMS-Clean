@@ -45,49 +45,46 @@ async function assignAdminRole() {
 
       console.log(`👤 Found user: ${user.email} (${user.id})`);
 
-      // Check if user profile exists
-      const { data: existingProfile, error: profileError } = await supabase
-        .from('user_profiles')
+      // Check if user role exists
+      const { data: existingRole, error: roleError } = await supabase
+        .from('user_roles')
         .select('*')
         .eq('user_id', user.id)
         .single();
 
-      if (profileError && profileError.code !== 'PGRST116') {
-        console.error('❌ Error checking user profile:', profileError);
+      if (roleError && roleError.code !== 'PGRST116') {
+        console.error('❌ Error checking user role:', roleError);
         rl.close();
         return;
       }
 
-      if (existingProfile) {
-        // Update existing profile
-        console.log('📝 Updating existing user profile...');
+      if (existingRole) {
+        // Update existing role
+        console.log('📝 Updating existing user role...');
         const { error: updateError } = await supabase
-          .from('user_profiles')
+          .from('user_roles')
           .update({ role: 'admin' })
           .eq('user_id', user.id);
 
         if (updateError) {
-          console.error('❌ Error updating user profile:', updateError);
+          console.error('❌ Error updating user role:', updateError);
         } else {
-          console.log('✅ User profile updated with admin role!');
+          console.log('✅ User role updated to admin!');
         }
       } else {
-        // Create new profile
-        console.log('📝 Creating new user profile with admin role...');
+        // Create new role
+        console.log('📝 Creating new user role with admin...');
         const { error: insertError } = await supabase
-          .from('user_profiles')
+          .from('user_roles')
           .insert({
             user_id: user.id,
-            email: user.email,
-            role: 'admin',
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
+            role: 'admin'
           });
 
         if (insertError) {
-          console.error('❌ Error creating user profile:', insertError);
+          console.error('❌ Error creating user role:', insertError);
         } else {
-          console.log('✅ User profile created with admin role!');
+          console.log('✅ User role created with admin!');
         }
       }
 
