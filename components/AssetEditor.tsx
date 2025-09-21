@@ -3,21 +3,13 @@
 import { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import { X, Save, Trash2, Upload, Link } from 'lucide-react';
+import { Asset } from '@/lib/admin-types';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
-interface Asset {
-  id?: number;
-  title: string;
-  assettype: string;
-  providerkey: string;
-  mimetype: string;
-  sizebytes: number;
-  lessonid: number;
-}
 
 interface AssetEditorProps {
   asset: Asset | null;
@@ -36,6 +28,7 @@ const ASSET_TYPES = [
 
 export default function AssetEditor({ asset, lessonId, isOpen, onClose, onSave }: AssetEditorProps) {
   const [formData, setFormData] = useState<Asset>({
+    id: 0,
     title: '',
     assettype: 'video',
     providerkey: '',
@@ -51,6 +44,7 @@ export default function AssetEditor({ asset, lessonId, isOpen, onClose, onSave }
       setFormData(asset);
     } else {
       setFormData({
+        id: 0,
         title: '',
         assettype: 'video',
         providerkey: '',

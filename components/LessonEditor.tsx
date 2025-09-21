@@ -3,18 +3,13 @@
 import { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import { X, Save, Trash2 } from 'lucide-react';
+import { Lesson } from '@/lib/admin-types';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
-interface Lesson {
-  id?: number;
-  title: string;
-  courseid: number;
-  orderindex: number;
-}
 
 interface LessonEditorProps {
   lesson: Lesson | null;
@@ -26,6 +21,7 @@ interface LessonEditorProps {
 
 export default function LessonEditor({ lesson, courseId, isOpen, onClose, onSave }: LessonEditorProps) {
   const [formData, setFormData] = useState<Lesson>({
+    id: 0,
     title: '',
     courseid: courseId,
     orderindex: 1
@@ -38,6 +34,7 @@ export default function LessonEditor({ lesson, courseId, isOpen, onClose, onSave
       setFormData(lesson);
     } else {
       setFormData({
+        id: 0,
         title: '',
         courseid: courseId,
         orderindex: 1

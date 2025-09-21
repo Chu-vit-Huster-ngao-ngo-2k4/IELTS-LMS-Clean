@@ -2,12 +2,13 @@
 
 import { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/components/AuthProvider';
 import { useRouter } from 'next/navigation';
 import Header from '@/components/Header';
 import CourseEditor from '@/components/CourseEditor';
 import LessonEditor from '@/components/LessonEditor';
 import AssetEditor from '@/components/AssetEditor';
+import { Course, Lesson, Asset } from '@/lib/admin-types';
 import { 
   BookOpen, 
   Users, 
@@ -26,31 +27,6 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
-interface Course {
-  id: number;
-  title: string;
-  description: string;
-  createdat: string;
-  lessons?: Lesson[];
-}
-
-interface Lesson {
-  id: number;
-  title: string;
-  courseid: number;
-  orderindex: number;
-  assets?: Asset[];
-}
-
-interface Asset {
-  id: number;
-  title: string;
-  assettype: string;
-  providerkey: string;
-  mimetype: string;
-  sizebytes: number;
-  lessonid: number;
-}
 
 export default function AdminDashboard() {
   const { user } = useAuth();
