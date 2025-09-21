@@ -3,9 +3,11 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import Header from '@/components/Header';
+import { useAuth } from '@/components/AuthProvider';
 import { BookOpen, Play, Users, Award, ArrowRight, Mail, Phone, MessageCircle } from 'lucide-react';
 
 export default function HomePage() {
+  const { user, loading } = useAuth();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
@@ -21,13 +23,25 @@ export default function HomePage() {
             Từ nền tảng đến chuyên sâu, trang bị đầy đủ kiến thức và kỹ năng để đạt điểm IELTS cao
           </p>
           <div className="flex justify-center space-x-4">
-            <Link
-              href="/courses"
-              className="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center"
-            >
-              <Play className="h-5 w-5 mr-2" />
-              Bắt đầu học ngay
-            </Link>
+            {user ? (
+              <Link
+                href="/courses"
+                className="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center"
+              >
+                <Play className="h-5 w-5 mr-2" />
+                Bắt đầu học ngay
+              </Link>
+            ) : (
+              <div className="text-center">
+                <p className="text-gray-600 mb-4">Vui lòng đăng nhập để truy cập khóa học</p>
+                <Link
+                  href="/auth/login"
+                  className="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors inline-flex items-center"
+                >
+                  Đăng nhập
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -67,67 +81,69 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* Course Preview */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">Khóa học nổi bật</h2>
-          <p className="text-gray-600">Bắt đầu hành trình học IELTS của bạn</p>
+      {/* Course Preview - Only show if logged in */}
+      {user && (
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Khóa học nổi bật</h2>
+            <p className="text-gray-600">Bắt đầu hành trình học IELTS của bạn</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="bg-white rounded-lg shadow-md overflow-hidden">
+              <div className="p-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Từ vựng cơ bản</h3>
+                <p className="text-gray-600 text-sm mb-4">Nền tảng từ vựng IELTS</p>
+                <Link
+                  href="/courses/1"
+                  className="text-blue-600 hover:text-blue-700 flex items-center"
+                >
+                  Xem chi tiết <ArrowRight className="h-4 w-4 ml-1" />
+                </Link>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-lg shadow-md overflow-hidden">
+              <div className="p-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Ngữ pháp cơ bản</h3>
+                <p className="text-gray-600 text-sm mb-4">Cấu trúc ngữ pháp quan trọng</p>
+                <Link
+                  href="/courses/2"
+                  className="text-blue-600 hover:text-blue-700 flex items-center"
+                >
+                  Xem chi tiết <ArrowRight className="h-4 w-4 ml-1" />
+                </Link>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-lg shadow-md overflow-hidden">
+              <div className="p-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Phát âm cơ bản</h3>
+                <p className="text-gray-600 text-sm mb-4">Kỹ thuật phát âm chuẩn</p>
+                <Link
+                  href="/courses/3"
+                  className="text-blue-600 hover:text-blue-700 flex items-center"
+                >
+                  Xem chi tiết <ArrowRight className="h-4 w-4 ml-1" />
+                </Link>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-lg shadow-md overflow-hidden">
+              <div className="p-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Listening Gap-Filling</h3>
+                <p className="text-gray-600 text-sm mb-4">Kỹ năng nghe và điền từ</p>
+                <Link
+                  href="/courses/4"
+                  className="text-blue-600 hover:text-blue-700 flex items-center"
+                >
+                  Xem chi tiết <ArrowRight className="h-4 w-4 ml-1" />
+                </Link>
+              </div>
+            </div>
+          </div>
         </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div className="bg-white rounded-lg shadow-md overflow-hidden">
-            <div className="p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Từ vựng cơ bản</h3>
-              <p className="text-gray-600 text-sm mb-4">Nền tảng từ vựng IELTS</p>
-              <Link
-                href="/courses/1"
-                className="text-blue-600 hover:text-blue-700 flex items-center"
-              >
-                Xem chi tiết <ArrowRight className="h-4 w-4 ml-1" />
-              </Link>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg shadow-md overflow-hidden">
-            <div className="p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Ngữ pháp cơ bản</h3>
-              <p className="text-gray-600 text-sm mb-4">Cấu trúc ngữ pháp quan trọng</p>
-              <Link
-                href="/courses/2"
-                className="text-blue-600 hover:text-blue-700 flex items-center"
-              >
-                Xem chi tiết <ArrowRight className="h-4 w-4 ml-1" />
-              </Link>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg shadow-md overflow-hidden">
-            <div className="p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Phát âm cơ bản</h3>
-              <p className="text-gray-600 text-sm mb-4">Kỹ thuật phát âm chuẩn</p>
-              <Link
-                href="/courses/3"
-                className="text-blue-600 hover:text-blue-700 flex items-center"
-              >
-                Xem chi tiết <ArrowRight className="h-4 w-4 ml-1" />
-              </Link>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg shadow-md overflow-hidden">
-            <div className="p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Listening Gap-Filling</h3>
-              <p className="text-gray-600 text-sm mb-4">Kỹ năng nghe và điền từ</p>
-              <Link
-                href="/courses/4"
-                className="text-blue-600 hover:text-blue-700 flex items-center"
-              >
-                Xem chi tiết <ArrowRight className="h-4 w-4 ml-1" />
-              </Link>
-            </div>
-          </div>
-        </div>
-      </div>
+      )}
 
       {/* Contact Admin Section */}
       <div className="bg-white py-16">
