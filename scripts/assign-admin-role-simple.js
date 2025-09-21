@@ -1,3 +1,6 @@
+
+// FILE GAN QUYEN ADMIN CHO USER
+
 const { createClient } = require('@supabase/supabase-js');
 require('dotenv').config({ path: '.env.local' });
 

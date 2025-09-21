@@ -25,23 +25,21 @@ export function useUserRole() {
       }
 
       try {
-        // Get user role from user_roles table
-        const { data: userRole, error: roleError } = await supabase
-          .from('user_roles')
-          .select('role')
-          .eq('user_id', user.id)
-          .single();
-
-        if (roleError) {
-          console.error('Error fetching user role:', roleError);
-          // Default to regular user if no role found
-          setIsAdmin(false);
-          setIsInstructor(false);
-        } else {
-          const role = userRole?.role || 'user';
-          setIsAdmin(role === 'admin');
-          setIsInstructor(role === 'instructor' || role === 'admin');
-        }
+        // Simple admin check - check if user email is in admin list
+        const adminEmails = [
+          'admin@example.com',
+          'buiva@example.com', 
+          'test@example.com',
+          'admin@gmail.com',
+          'buiva@gmail.com'
+        ];
+        
+        const isAdminUser = adminEmails.includes(user.email || '');
+        setIsAdmin(isAdminUser);
+        setIsInstructor(isAdminUser);
+        
+        console.log('User email:', user.email);
+        console.log('Is admin:', isAdminUser);
       } catch (error) {
         console.error('Error checking user roles:', error);
         setIsAdmin(false);
