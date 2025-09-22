@@ -14,13 +14,8 @@ export default function ProgressTracker({
   exerciseCompleted 
 }: ProgressTrackerProps) {
   const getProgressPercentage = () => {
-    let completed = 0;
-    let total = 2; // video + exercise
-    
-    if (videoCompleted) completed++;
-    if (exerciseCompleted) completed++;
-    
-    return Math.round((completed / total) * 100);
+    // Only count video completion for 100%
+    return videoCompleted ? 100 : 0;
   };
 
   const getStatusColor = (isCompleted: boolean) => {

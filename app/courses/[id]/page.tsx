@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Header from '@/components/Header'
 import { BookOpen, Play, Clock, CheckCircle, ArrowRight } from 'lucide-react'
+import { useProgress } from '@/hooks/useProgress'
 
 interface Lesson {
   id: number
@@ -36,15 +37,21 @@ export default function CourseDetailPage({ params }: { params: { id: string } })
   const [course, setCourse] = useState<Course | null>(null)
   const [lessons, setLessons] = useState<Lesson[]>([])
   const [loadingData, setLoadingData] = useState(true)
+  const [courseProgress, setCourseProgress] = useState<any>(null)
+  const [completedLessons, setCompletedLessons] = useState<Set<number>>(new Set())
   const supabase = createClientComponentClient()
   const router = useRouter()
+  const { fetchCourseProgress } = useProgress()
 
   useEffect(() => {
     // Allow all users to access courses without login
     if (params.id) {
       fetchCourseData()
+      if (user) {
+        fetchProgressData()
+      }
     }
-  }, [params.id])
+  }, [params.id, user])
 
   const fetchCourseData = async () => {
     try {
@@ -78,6 +85,43 @@ export default function CourseDetailPage({ params }: { params: { id: string } })
     }
   }
 
+  const fetchProgressData = async () => {
+    if (!user) return
+
+    try {
+      // Fetch course progress
+      const { data: progressData, error: progressError } = await supabase
+        .from('user_course_progress')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('course_id', parseInt(params.id))
+        .single()
+
+      if (progressError && progressError.code !== 'PGRST116') {
+        console.error('Error fetching course progress:', progressError)
+      } else {
+        setCourseProgress(progressData)
+      }
+
+      // Fetch completed lessons
+      const { data: completedData, error: completedError } = await supabase
+        .from('user_progress')
+        .select('lesson_id')
+        .eq('user_id', user.id)
+        .eq('course_id', parseInt(params.id))
+        .eq('progress_type', 'completed')
+
+      if (completedError) {
+        console.error('Error fetching completed lessons:', completedError)
+      } else {
+        const completed = new Set(completedData?.map(item => item.lesson_id) || [])
+        setCompletedLessons(completed)
+      }
+    } catch (error) {
+      console.error('Error fetching progress data:', error)
+    }
+  }
+
 
   if (loading || loadingData) {
     return (
@@ -102,8 +146,8 @@ export default function CourseDetailPage({ params }: { params: { id: string } })
     )
   }
 
-  const completedLessons = 0 // No progress tracking for now
-  const progressPercentage = 0 // No progress tracking for now
+  const completedLessonsCount = completedLessons.size
+  const progressPercentage = courseProgress?.overall_progress || 0
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -120,7 +164,7 @@ export default function CourseDetailPage({ params }: { params: { id: string } })
           <div className="bg-white rounded-lg p-6 shadow-sm">
             <div className="flex justify-between items-center mb-2">
               <span className="text-sm font-medium text-gray-700">Tiến độ khóa học</span>
-              <span className="text-sm text-gray-500">{completedLessons}/{lessons.length} bài học</span>
+              <span className="text-sm text-gray-500">{completedLessonsCount}/{lessons.length} bài học</span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-3">
               <div 
@@ -148,40 +192,61 @@ export default function CourseDetailPage({ params }: { params: { id: string } })
             </div>
           ) : (
             <div className="divide-y divide-gray-200">
-              {lessons.map((lesson, index) => (
-                <div key={lesson.id} className="px-6 py-4 hover:bg-gray-50">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-4">
-                      <div className="flex-shrink-0">
-                        <div className="h-6 w-6 rounded-full border-2 border-gray-300 flex items-center justify-center">
-                          <span className="text-xs font-medium text-gray-500">{index + 1}</span>
-                        </div>
-                      </div>
-                      <div>
-                        <h3 className="text-lg font-medium text-gray-900">{lesson.title}</h3>
-                        <div className="flex items-center space-x-4 text-sm text-gray-500 mt-1">
-                          <div className="flex items-center">
-                            <Play className="h-4 w-4 mr-1" />
-                            {lesson.assets?.length || 0} tài liệu
-                          </div>
-                          <div className="flex items-center">
-                            <Clock className="h-4 w-4 mr-1" />
-                            {lesson.assets?.filter(a => a.mimetype?.startsWith('video')).length > 0 ? 'Video' : 'Audio'}
+              {lessons.map((lesson, index) => {
+                const isCompleted = completedLessons.has(lesson.id)
+                return (
+                  <div key={lesson.id} className="px-6 py-4 hover:bg-gray-50">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-4">
+                        <div className="flex-shrink-0">
+                          <div className={`h-6 w-6 rounded-full border-2 flex items-center justify-center ${
+                            isCompleted 
+                              ? 'border-green-500 bg-green-100' 
+                              : 'border-gray-300'
+                          }`}>
+                            {isCompleted ? (
+                              <CheckCircle className="h-4 w-4 text-green-600" />
+                            ) : (
+                              <span className="text-xs font-medium text-gray-500">{index + 1}</span>
+                            )}
                           </div>
                         </div>
+                        <div>
+                          <h3 className="text-lg font-medium text-gray-900">{lesson.title}</h3>
+                          <div className="flex items-center space-x-4 text-sm text-gray-500 mt-1">
+                            <div className="flex items-center">
+                              <Play className="h-4 w-4 mr-1" />
+                              {lesson.assets?.length || 0} tài liệu
+                            </div>
+                            <div className="flex items-center">
+                              <Clock className="h-4 w-4 mr-1" />
+                              {lesson.assets?.filter(a => a.mimetype?.startsWith('video')).length > 0 ? 'Video' : 'Audio'}
+                            </div>
+                            {isCompleted && (
+                              <div className="flex items-center text-green-600">
+                                <CheckCircle className="h-4 w-4 mr-1" />
+                                Hoàn thành
+                              </div>
+                            )}
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Link 
-                        href={`/lessons/${lesson.id}`}
-                        className="btn-primary text-sm"
-                      >
-                        Bắt đầu
-                      </Link>
+                      <div className="flex items-center space-x-2">
+                        <Link 
+                          href={`/lessons/${lesson.id}`}
+                          className={`text-sm px-4 py-2 rounded-lg font-medium transition-colors ${
+                            isCompleted
+                              ? 'bg-green-100 text-green-700 hover:bg-green-200'
+                              : 'btn-primary'
+                          }`}
+                        >
+                          {isCompleted ? 'Xem lại' : 'Bắt đầu'}
+                        </Link>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                )
+              })}
             </div>
           )}
         </div>

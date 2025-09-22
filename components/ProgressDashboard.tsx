@@ -1,7 +1,9 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { useProgress } from '@/hooks/useProgress';
 import { useAuth } from '@/components/AuthProvider';
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { 
   BookOpen, 
   Trophy, 
@@ -16,7 +18,50 @@ import Link from 'next/link';
 
 export default function ProgressDashboard() {
   const { user } = useAuth();
-  const { courseProgress, achievements, loading } = useProgress();
+  const { courseProgress, achievements, loading, fetchCourseProgress } = useProgress();
+  const [courseNames, setCourseNames] = useState<Record<number, string>>({});
+  const [refreshKey, setRefreshKey] = useState(0);
+  const supabase = createClientComponentClient();
+
+  // Force refresh every 30 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchCourseProgress();
+      setRefreshKey(prev => prev + 1);
+    }, 30000); // 30 seconds
+
+    return () => clearInterval(interval);
+  }, [fetchCourseProgress]);
+
+  // Fetch course names
+  useEffect(() => {
+    const fetchCourseNames = async () => {
+      if (courseProgress.length === 0) return;
+
+      try {
+        const courseIds = courseProgress.map(cp => cp.course_id);
+        const { data: courses, error } = await supabase
+          .from('courses')
+          .select('id, title')
+          .in('id', courseIds);
+
+        if (error) {
+          console.error('Error fetching course names:', error);
+          return;
+        }
+
+        const names: Record<number, string> = {};
+        courses?.forEach(course => {
+          names[course.id] = course.title;
+        });
+        setCourseNames(names);
+      } catch (error) {
+        console.error('Error fetching course names:', error);
+      }
+    };
+
+    fetchCourseNames();
+  }, [courseProgress, supabase]);
 
   if (loading) {
     return (
@@ -34,7 +79,12 @@ export default function ProgressDashboard() {
   const totalAssets = courseProgress.reduce((sum, cp) => sum + cp.total_assets, 0);
   const completedAssets = courseProgress.reduce((sum, cp) => sum + cp.completed_assets, 0);
 
-  const overallProgress = totalAssets > 0 ? Math.round((completedAssets / totalAssets) * 100) : 0;
+  // Calculate overall progress based on courses that user has actually started
+  // Only count courses where user has made some progress (overall_progress > 0)
+  const coursesWithProgress = courseProgress.filter(cp => cp.overall_progress > 0);
+  const totalAssetsWithProgress = coursesWithProgress.reduce((sum, cp) => sum + cp.total_assets, 0);
+  const completedAssetsWithProgress = coursesWithProgress.reduce((sum, cp) => sum + cp.completed_assets, 0);
+  const overallProgress = totalAssetsWithProgress > 0 ? Math.round((completedAssetsWithProgress / totalAssetsWithProgress) * 100) : 0;
 
   return (
     <div className="space-y-6">
@@ -105,8 +155,17 @@ export default function ProgressDashboard() {
 
       {/* Progress Overview */}
       <div className="bg-white rounded-lg shadow">
-        <div className="px-6 py-4 border-b border-gray-200">
+        <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
           <h3 className="text-lg font-medium text-gray-900">Tiến độ học tập</h3>
+          <button
+            onClick={() => {
+              fetchCourseProgress();
+              setRefreshKey(prev => prev + 1);
+            }}
+            className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+          >
+            🔄 Làm mới
+          </button>
         </div>
         <div className="p-6">
           <div className="space-y-4">
@@ -124,9 +183,15 @@ export default function ProgressDashboard() {
               </div>
             ) : (
               courseProgress.map((course) => (
-                <div key={course.id} className="border rounded-lg p-4">
+                <Link
+                  key={course.id}
+                  href={`/courses/${course.course_id}`}
+                  className="block border rounded-lg p-4 hover:bg-gray-50 transition-colors cursor-pointer"
+                >
                   <div className="flex items-center justify-between mb-2">
-                    <h4 className="font-medium text-gray-900">Khóa học #{course.course_id}</h4>
+                    <h4 className="font-medium text-gray-900">
+                      {courseNames[course.course_id] || `Khóa học #${course.course_id}`}
+                    </h4>
                     <span className="text-sm text-gray-500">
                       {course.overall_progress}%
                     </span>
@@ -141,7 +206,7 @@ export default function ProgressDashboard() {
                     <span>{course.completed_assets}/{course.total_assets} nội dung</span>
                     <span>{course.completed_lessons}/{course.total_lessons} bài học</span>
                   </div>
-                </div>
+                </Link>
               ))
             )}
           </div>

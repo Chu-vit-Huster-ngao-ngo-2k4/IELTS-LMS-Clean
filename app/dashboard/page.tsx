@@ -5,6 +5,7 @@ import { useAuth } from '@/components/AuthProvider'
 import { useRouter } from 'next/navigation'
 import Header from '@/components/Header'
 import ProgressDashboard from '@/components/ProgressDashboard'
+import DailyDictionary from '@/components/DailyDictionary'
 
 export default function DashboardPage() {
   const { user, loading } = useAuth()
@@ -36,7 +37,17 @@ export default function DashboardPage() {
       <Header title="Dashboard" showAuth={true} />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <ProgressDashboard />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Progress Dashboard */}
+          <div className="lg:col-span-2">
+            <ProgressDashboard />
+          </div>
+          
+          {/* Daily Dictionary */}
+          <div className="lg:col-span-1">
+            <DailyDictionary />
+          </div>
+        </div>
       </div>
     </div>
   )

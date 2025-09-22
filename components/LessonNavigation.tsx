@@ -4,23 +4,35 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { Lesson } from '@/lib/types';
+import { useAuth } from '@/components/AuthProvider';
+import { BarChart3, Home } from 'lucide-react';
 
 interface LessonNavigationProps {
   courseId?: number;
   currentLessonId: number;
+  onLessonCompleted?: () => void;
 }
 
-export default function LessonNavigation({ courseId, currentLessonId }: LessonNavigationProps) {
+export default function LessonNavigation({ courseId, currentLessonId, onLessonCompleted }: LessonNavigationProps) {
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [completedLessons, setCompletedLessons] = useState<Set<number>>(new Set());
+  const { user } = useAuth();
   const supabase = createClientComponentClient();
 
   useEffect(() => {
     if (courseId) {
       fetchLessons();
+      fetchCompletedLessons();
     }
-  }, [courseId]);
+  }, [courseId, user]);
+
+  useEffect(() => {
+    if (onLessonCompleted) {
+      fetchCompletedLessons();
+    }
+  }, [onLessonCompleted]);
 
   const fetchLessons = async () => {
     try {
@@ -43,6 +55,26 @@ export default function LessonNavigation({ courseId, currentLessonId }: LessonNa
     }
   };
 
+  const fetchCompletedLessons = async () => {
+    if (!user || !courseId) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('user_progress')
+        .select('lesson_id')
+        .eq('user_id', user.id)
+        .eq('course_id', courseId)
+        .eq('progress_type', 'completed');
+
+      if (error) throw error;
+
+      const completed = new Set(data?.map(item => item.lesson_id) || []);
+      setCompletedLessons(completed);
+    } catch (err) {
+      console.error('Error fetching completed lessons:', err);
+    }
+  };
+
   const getCurrentLessonIndex = () => {
     return lessons.findIndex(lesson => lesson.id === currentLessonId);
   };
@@ -58,10 +90,11 @@ export default function LessonNavigation({ courseId, currentLessonId }: LessonNa
   };
 
   const getLessonStatus = (lesson: Lesson) => {
-    // This would typically check the user's progress
-    // For now, we'll just show if it's the current lesson
     if (lesson.id === currentLessonId) {
       return 'current';
+    }
+    if (completedLessons.has(lesson.id)) {
+      return 'completed';
     }
     return 'pending';
   };
@@ -143,10 +176,43 @@ export default function LessonNavigation({ courseId, currentLessonId }: LessonNa
 
   return (
     <div className="space-y-6">
-      {/* Navigation Buttons */}
+      {/* Dashboard Button */}
       <div className="bg-white rounded-lg shadow-sm border p-6">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">
           Điều hướng
+        </h3>
+        
+        <div className="space-y-3">
+          {/* Dashboard Link */}
+          <Link
+            href="/dashboard"
+            className="flex items-center p-3 text-sm font-medium text-white bg-blue-600 border border-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            <BarChart3 className="w-4 h-4 mr-3" />
+            <div>
+              <p className="font-medium">Dashboard</p>
+              <p className="text-xs opacity-75">Xem tiến độ học tập</p>
+            </div>
+          </Link>
+
+          {/* Home Link */}
+          <Link
+            href="/"
+            className="flex items-center p-3 text-sm font-medium text-gray-700 bg-gray-50 border border-gray-200 rounded-lg hover:bg-gray-100 transition-colors"
+          >
+            <Home className="w-4 h-4 mr-3" />
+            <div>
+              <p className="font-medium">Trang chủ</p>
+              <p className="text-xs text-gray-500">Về trang chủ</p>
+            </div>
+          </Link>
+        </div>
+      </div>
+
+      {/* Navigation Buttons */}
+      <div className="bg-white rounded-lg shadow-sm border p-6">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">
+          Bài học
         </h3>
         
         <div className="space-y-3">
@@ -242,6 +308,16 @@ export default function LessonNavigation({ courseId, currentLessonId }: LessonNa
                       <p className="font-medium">Bài {lesson.orderindex}</p>
                       <p className="text-xs opacity-75 truncate">{lesson.title}</p>
                     </div>
+                    {status === 'completed' && (
+                      <span className="text-xs px-2 py-1 bg-green-200 text-green-800 rounded-full">
+                        Hoàn thành
+                      </span>
+                    )}
+                    {status === 'pending' && (
+                      <span className="text-xs px-2 py-1 bg-gray-200 text-gray-600 rounded-full">
+                        Bắt đầu
+                      </span>
+                    )}
                   </Link>
                 )}
               </div>

@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import Header from '@/components/Header';
+import DailyDictionary from '@/components/DailyDictionary';
 import { useAuth } from '@/components/AuthProvider';
 import { BookOpen, Play, Users, Award, ArrowRight, Mail, Phone, MessageCircle } from 'lucide-react';
 
@@ -78,6 +79,17 @@ export default function HomePage() {
               Hệ thống theo dõi tiến độ học tập chi tiết và chính xác
             </p>
           </div>
+        </div>
+      </div>
+
+      {/* Daily Dictionary - Show for all users */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div className="text-center mb-8">
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">Từ vựng IELTS hôm nay</h2>
+          <p className="text-gray-600">Học từ vựng mới mỗi ngày để nâng cao trình độ IELTS</p>
+        </div>
+        <div className="max-w-4xl mx-auto">
+          <DailyDictionary />
         </div>
       </div>
 

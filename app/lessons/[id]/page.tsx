@@ -21,7 +21,7 @@ export default function LessonPage() {
   const router = useRouter();
   const supabase = createClientComponentClient();
   const { user, loading: authLoading } = useAuth();
-  const { markAsStarted, markAsCompleted } = useProgress();
+  const { markAsStarted, markAsCompleted, fetchCourseProgress } = useProgress();
   
   const [lesson, setLesson] = useState<Lesson | null>(null);
   const [course, setCourse] = useState<Course | null>(null);
@@ -141,16 +141,29 @@ export default function LessonPage() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      const { error } = await supabase
-        .from('progress')
-        .upsert({
-          userid: user.id,
-          lessonid: parseInt(lessonId),
-          status: status === 'exercise_completed' ? 'completed' : 'started',
-          updatedat: new Date().toISOString()
-        });
-
-      if (error) console.error('Error updating progress:', error);
+      // Use the new progress system
+      if (status === 'video_completed') {
+        // Mark video as completed (100%) - this completes the entire lesson
+        if (videos.length > 0) {
+          await markAsCompleted(course?.id || 0, parseInt(lessonId), videos[0]?.id || 0, 300);
+        }
+        
+        // Also mark exercise as completed if it exists (optional)
+        if (exercises.length > 0) {
+          await markAsCompleted(course?.id || 0, parseInt(lessonId), exercises[0]?.id || 0, 0);
+        }
+        
+        // Refresh dashboard data
+        await fetchCourseProgress();
+      } else if (status === 'exercise_completed') {
+        // Mark exercise as completed (100%)
+        if (exercises.length > 0) {
+          await markAsCompleted(course?.id || 0, parseInt(lessonId), exercises[0]?.id || 0, 0);
+        }
+        
+        // Refresh dashboard data
+        await fetchCourseProgress();
+      }
     } catch (err) {
       console.error('Error updating progress:', err);
     }
@@ -340,6 +353,11 @@ export default function LessonPage() {
             <LessonNavigation
               courseId={course?.id}
               currentLessonId={parseInt(lessonId)}
+              onLessonCompleted={() => {
+                // This will trigger refresh of completed lessons
+                setVideoCompleted(false);
+                setExerciseCompleted(false);
+              }}
             />
           </div>
         </div>
