@@ -145,12 +145,12 @@ export default function LessonPage() {
       if (status === 'video_completed') {
         // Mark video as completed (100%) - this completes the entire lesson
         if (videos.length > 0) {
-          await markAsCompleted(course?.id || 0, parseInt(lessonId), videos[0]?.id || 0, 300);
+          await markAsCompleted(course?.id || 0, parseInt(lessonId, 10), videos[0]?.id || 0, 300);
         }
         
         // Also mark exercise as completed if it exists (optional)
         if (exercises.length > 0) {
-          await markAsCompleted(course?.id || 0, parseInt(lessonId), exercises[0]?.id || 0, 0);
+          await markAsCompleted(course?.id || 0, parseInt(lessonId, 10), exercises[0]?.id || 0, 0);
         }
         
         // Refresh dashboard data
@@ -158,7 +158,7 @@ export default function LessonPage() {
       } else if (status === 'exercise_completed') {
         // Mark exercise as completed (100%)
         if (exercises.length > 0) {
-          await markAsCompleted(course?.id || 0, parseInt(lessonId), exercises[0]?.id || 0, 0);
+          await markAsCompleted(course?.id || 0, parseInt(lessonId, 10), exercises[0]?.id || 0, 0);
         }
         
         // Refresh dashboard data
@@ -352,7 +352,7 @@ export default function LessonPage() {
             {/* Lesson Navigation */}
             <LessonNavigation
               courseId={course?.id}
-              currentLessonId={parseInt(lessonId)}
+              currentLessonId={parseInt(lessonId, 10)}
               onLessonCompleted={() => {
                 // This will trigger refresh of completed lessons
                 setVideoCompleted(false);
